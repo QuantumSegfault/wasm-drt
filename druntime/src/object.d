@@ -1458,12 +1458,19 @@ class TypeInfo_Function : TypeInfo
 {
     override string toString() const pure @trusted
     {
-        import core.demangle : demangleType;
-
-        alias SafeDemangleFunctionType = char[] function (const(char)[] buf, char[] dst = null) @safe nothrow pure;
-        SafeDemangleFunctionType demangle = cast(SafeDemangleFunctionType) &demangleType;
-
-        return cast(string) demangle(deco);
+        version (none)
+        {
+            import core.demangle : demangleType;
+    
+            alias SafeDemangleFunctionType = char[] function (const(char)[] buf, char[] dst = null) @safe nothrow pure;
+            SafeDemangleFunctionType demangle = cast(SafeDemangleFunctionType) &demangleType;
+    
+            return cast(string) demangle(deco);
+        }
+        else
+        {
+            return deco;
+        }
     }
 
     override bool opEquals(Object o)
@@ -1535,12 +1542,19 @@ class TypeInfo_Delegate : TypeInfo
 {
     override string toString() const pure @trusted
     {
-        import core.demangle : demangleType;
-
-        alias SafeDemangleFunctionType = char[] function (const(char)[] buf, char[] dst = null) @safe nothrow pure;
-        SafeDemangleFunctionType demangle = cast(SafeDemangleFunctionType) &demangleType;
-
-        return cast(string) demangle(deco);
+        version (none)
+        {
+            import core.demangle : demangleType;
+    
+            alias SafeDemangleFunctionType = char[] function (const(char)[] buf, char[] dst = null) @safe nothrow pure;
+            SafeDemangleFunctionType demangle = cast(SafeDemangleFunctionType) &demangleType;
+    
+            return cast(string) demangle(deco);
+        }
+        else
+        {
+            return deco;
+        }
     }
 
     @safe unittest
@@ -2115,23 +2129,30 @@ class TypeInfo_Struct : TypeInfo
 
     final @property string name() nothrow const @trusted
     {
-        import core.demangle : demangleType;
-
-        if (mangledName is null) // e.g., opaque structs
-            return null;
-
-        const key = cast(const void*) this; // faster lookup than TypeInfo_Struct, at the cost of potential duplicates per binary
-        static string[typeof(key)] demangledNamesCache; // per thread
-
-        // not nothrow:
-        //return demangledNamesCache.require(key, cast(string) demangleType(mangledName));
-
-        if (auto pDemangled = key in demangledNamesCache)
-            return *pDemangled;
-
-        const demangled = cast(string) demangleType(mangledName);
-        demangledNamesCache[key] = demangled;
-        return demangled;
+        version (none)
+        {
+            import core.demangle : demangleType;
+    
+            if (mangledName is null) // e.g., opaque structs
+                return null;
+    
+            const key = cast(const void*) this; // faster lookup than TypeInfo_Struct, at the cost of potential duplicates per binary
+            static string[typeof(key)] demangledNamesCache; // per thread
+    
+            // not nothrow:
+            //return demangledNamesCache.require(key, cast(string) demangleType(mangledName));
+    
+            if (auto pDemangled = key in demangledNamesCache)
+                return *pDemangled;
+    
+            const demangled = cast(string) demangleType(mangledName);
+            demangledNamesCache[key] = demangled;
+            return demangled;
+        }
+        else
+        {
+            return mangledName;
+        }
     }
 
     void[] m_init;      // initializer; m_init.ptr == null if 0 initialize
