@@ -10,69 +10,7 @@
 
 module rt.sections;
 
-version (LDC)
-    public import rt.sections_ldc;
-
-version (OSX)
-    version = Darwin;
-else version (iOS)
-    version = Darwin;
-else version (TVOS)
-    version = Darwin;
-else version (WatchOS)
-    version = Darwin;
-
-version (GNU)
-    public import gcc.sections;
-else version (WebAssembly)
-    public import rt.sections_wasm;
-else version (CRuntime_Glibc)
-    public import rt.sections_elf_shared;
-else version (CRuntime_Musl)
-    public import rt.sections_elf_shared;
-else version (FreeBSD)
-    public import rt.sections_elf_shared;
-else version (NetBSD)
-    public import rt.sections_elf_shared;
-else version (OpenBSD)
-{
-    /**
-     * OpenBSD is missing support needed for elf_shared.
-     * See the top of sections_solaris.d for more info.
-     */
-
-    public import rt.sections_solaris;
-}
-else version (DragonFlyBSD)
-    public import rt.sections_elf_shared;
-else version (Solaris)
-    public import rt.sections_solaris;
-else version (Darwin)
-{
-    version (LDC)
-        public import rt.sections_elf_shared;
-    else version (X86_64)
-        public import rt.sections_osx_64;
-    else version (X86)
-        public import rt.sections_osx_x86;
-    else version (AArch64)
-        public import rt.sections_osx_64;
-    else
-        static assert(0, "unimplemented");
-}
-else version (CRuntime_Microsoft)
-{
-    version (LDC)
-        public import rt.sections_elf_shared;
-    else
-        public import rt.sections_win64;
-}
-else version (CRuntime_Bionic)
-    public import rt.sections_elf_shared;
-else version (CRuntime_UClibc)
-    public import rt.sections_elf_shared;
-else
-    static assert(0, "unimplemented");
+public import rt.sections_wasm;
 
 import rt.deh, rt.minfo;
 
