@@ -2833,8 +2833,8 @@ version (Windows)
             scope (exit)
             {
                 // allow the GC to clean up any resources it allocated for this thread.
-                import core.internal.gc.proxy : gc_getProxy;
-                gc_getProxy().cleanupThread(obj);
+                import core.internal.gc.proxy : gc_cleanupThread;
+                gc_cleanupThread(obj);
 
                 Thread.remove(obj);
                 obj.destroyDataStorage();
@@ -2973,8 +2973,8 @@ else version (Posix)
             scope (exit)
             {
                 // allow the GC to clean up any resources it allocated for this thread.
-                import core.internal.gc.proxy : gc_getProxy;
-                gc_getProxy().cleanupThread(obj);
+                import core.internal.gc.proxy : gc_cleanupThread;
+                gc_cleanupThread(obj);
 
                 Thread.remove(obj);
                 atomicStore!(MemoryOrder.raw)(obj.m_isRunning, false);

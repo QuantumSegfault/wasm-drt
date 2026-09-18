@@ -7,87 +7,89 @@
  */
 module core.internal.gc.proxy;
 
-import core.internal.gc.impl.proto.gc;
 import core.gc.config;
 import core.gc.gcinterface;
-import core.gc.registry : createGCInstance;
+import core.attribute : weak;
+import core.internal.container.array;
+import core.thread.threadbase : ThreadBase;
+import core.internal.abort : abort;
 
 static import core.memory;
 
 private
 {
-    static import core.memory;
     alias BlkInfo = core.memory.GC.BlkInfo;
 
     import core.internal.spinlock;
     static SpinLock instanceLock;
 
     __gshared bool isInstanceInit = false;
-    __gshared GC _instance = new ProtoGC();
-    __gshared GC proxiedGC; // used to iterate roots of Windows DLLs
 
-    pragma (inline, true) @trusted @nogc nothrow
-    GC instance() { return _instance; }
+    __gshared Array!Root preinitRoots;
+    __gshared Array!Range preinitRanges;
+
+    extern (C)
+    {
+        bool gc_impl_init() nothrow @nogc;
+        void gc_impl_term() nothrow @nogc;
+        void gc_impl_enable();
+        void gc_impl_disable();
+        void gc_impl_collect() nothrow;
+        void gc_impl_minimize() nothrow;
+        uint gc_impl_getAttr(void* p) nothrow;
+        uint gc_impl_setAttr(void* p, uint mask) nothrow;
+        uint gc_impl_clrAttr(void* p, uint mask) nothrow;
+        void* gc_impl_malloc(size_t size, uint bits, const TypeInfo ti) nothrow;
+        BlkInfo gc_impl_qalloc(size_t size, uint bits, const scope TypeInfo ti) nothrow;
+        void* gc_impl_calloc(size_t size, uint bits, const TypeInfo ti) nothrow;
+        void* gc_impl_realloc(void* p, size_t size, uint bits, const TypeInfo ti) nothrow;
+        size_t gc_impl_extend(void* p, size_t minsize, size_t maxsize, const TypeInfo ti) nothrow;
+        size_t gc_impl_reserve(size_t size) nothrow;
+        void gc_impl_free(void* p) nothrow @nogc;
+        void* gc_impl_addrOf(void* p) nothrow @nogc;
+        size_t gc_impl_sizeOf(void* p) nothrow @nogc;
+        BlkInfo gc_impl_query(void* p) nothrow;
+        core.memory.GC.Stats gc_impl_stats() @safe nothrow @nogc;
+        core.memory.GC.ProfileStats gc_impl_profileStats() @safe nothrow @nogc;
+        void gc_impl_addRoot(void* p) nothrow @nogc;
+        void gc_impl_removeRoot(void* p) nothrow @nogc;
+        void gc_impl_addRange(void* p, size_t sz, const TypeInfo ti) nothrow @nogc;
+        void gc_impl_removeRange(void* p) nothrow @nogc;
+        void gc_impl_runFinalizers(const scope void[] segment) nothrow;
+        bool gc_impl_inFinalizer() nothrow @nogc @safe;
+        ulong gc_impl_allocatedInCurrentThread() nothrow;
+        void[] gc_impl_getArrayUsed(void* ptr, bool atomic) nothrow;
+        bool gc_impl_expandArrayUsed(void[] slice, size_t newUsed, bool atomic) nothrow @safe;
+        size_t gc_impl_reserveArrayCapacity(void[] slice, size_t request, bool atomic) nothrow @safe;
+        bool gc_impl_shrinkArrayUsed(void[] slice, size_t existingUsed, bool atomic) nothrow;
+        void gc_impl_initThread(ThreadBase thread) nothrow @nogc;
+        void gc_impl_cleanupThread(ThreadBase thread) nothrow @nogc;
+    }
 }
 
 extern (C)
 {
-    import core.attribute : weak;
-
-    // do not import GC modules, they might add a dependency to this whole module
-    void _d_register_conservative_gc();
-    void _d_register_manual_gc();
-
-    // if you don't want to include the default GCs, replace during link by another implementation
-    void* register_default_gcs() @weak
-    {
-        pragma(inline, false);
-        // do not call, they register implicitly through pragma(crt_constructor)
-        // avoid being optimized away
-        auto reg1 = &_d_register_conservative_gc;
-        auto reg2 = &_d_register_manual_gc;
-        return reg1 < reg2 ? reg1 : reg2;
-    }
-
-    void gc_init()
+    void gc_init() nothrow
     {
         instanceLock.lock();
         if (!isInstanceInit)
         {
-            register_default_gcs();
             config.initialize();
-            auto protoInstance = instance;
-            auto newInstance = createGCInstance(config.gc);
-            if (newInstance is null)
-            {
-                import core.stdc.stdio : fprintf, stderr;
-                import core.stdc.stdlib : exit;
-                import core.atomic : atomicLoad;
 
-                fprintf(atomicLoad(stderr), "No GC was initialized, please recheck the name of the selected GC ('%.*s').\n", cast(int)config.gc.length, config.gc.ptr);
-                instanceLock.unlock();
-                exit(1);
+            if (!gc_impl_init()) abort("Cannot initialize the garbage collector.\n"); 
 
-                // Shouldn't get here.
-                assert(0);
-            }
-            _instance = newInstance;
-            // Transfer all ranges and roots to the real GC.
-            (cast(ProtoGC) protoInstance).transferRangesAndRoots();
+            foreach (ref r; preinitRanges)
+                gc_impl_addRange(r.pbot, r.ptop - r.pbot, r.ti);
+
+            foreach (ref r; preinitRoots)
+                gc_impl_addRoot(r.proot);
+
+            preinitRanges.reset();
+            preinitRoots.reset();
+
             isInstanceInit = true;
         }
         instanceLock.unlock();
-    }
-
-    void gc_init_nothrow() nothrow
-    {
-        scope(failure)
-        {
-            import core.internal.abort;
-            abort("Cannot initialize the garbage collector.\n");
-            assert(0);
-        }
-        gc_init();
     }
 
     void gc_term()
@@ -106,210 +108,237 @@ extern (C)
                 case "none":
                     break;
                 case "collect":
-                    instance.collect();
+                    gc_impl_collect();
                     break;
                 case "finalize":
-                    instance.runFinalizers((cast(ubyte*)null)[0 .. size_t.max]);
+                    gc_impl_runFinalizers((cast(ubyte*)null)[0 .. size_t.max]);
                     break;
             }
-            destroy(instance);
         }
     }
 
     void gc_enable()
     {
-        instance.enable();
+        if (!isInstanceInit) gc_init();
+        gc_impl_enable();
     }
 
     void gc_disable()
     {
-        instance.disable();
+        if (!isInstanceInit) gc_init();
+        gc_impl_disable();
     }
 
     void gc_collect() nothrow
     {
-        instance.collect();
+        if (!isInstanceInit) return;
+        gc_impl_collect();
     }
 
     void gc_minimize() nothrow
     {
-        instance.minimize();
+        if (!isInstanceInit) return;
+        gc_impl_minimize();
     }
 
     uint gc_getAttr( void* p ) nothrow
     {
-        return instance.getAttr(p);
+        if (!isInstanceInit) return 0;
+        return gc_impl_getAttr(p);
     }
 
     uint gc_setAttr( void* p, uint a ) nothrow
     {
-        return instance.setAttr(p, a);
+        if (!isInstanceInit) return 0;
+        return gc_impl_setAttr(p, a);
     }
 
     uint gc_clrAttr( void* p, uint a ) nothrow
     {
-        return instance.clrAttr(p, a);
+        if (!isInstanceInit) return 0;
+        return gc_impl_clrAttr(p, a);
     }
 
     void* gc_malloc( size_t sz, uint ba = 0, const scope TypeInfo ti = null ) nothrow
     {
-        return instance.malloc(sz, ba, ti);
+        if (!isInstanceInit) gc_init();
+        return gc_impl_malloc(sz, ba, ti);
     }
 
-    BlkInfo gc_qalloc( size_t sz, uint ba = 0, const scope TypeInfo ti = null ) nothrow
+    BlkInfo gc_qalloc(size_t sz, uint ba = 0, const scope TypeInfo ti = null) nothrow
     {
-        return instance.qalloc( sz, ba, ti );
+        if (!isInstanceInit) gc_init();
+        return gc_impl_qalloc(sz, ba, ti);
     }
 
-    void* gc_calloc( size_t sz, uint ba = 0, const scope TypeInfo ti = null ) nothrow
+    void* gc_calloc(size_t sz, uint ba = 0, const scope TypeInfo ti = null) nothrow
     {
-        return instance.calloc( sz, ba, ti );
+        if (!isInstanceInit) gc_init();
+        return gc_impl_calloc(sz, ba, ti);
     }
 
-    void* gc_realloc( void* p, size_t sz, uint ba = 0, const scope TypeInfo ti = null ) nothrow
+    void* gc_realloc(void* p, size_t sz, uint ba = 0, const scope TypeInfo ti = null) nothrow
     {
-        return instance.realloc( p, sz, ba, ti );
+        if (!isInstanceInit) gc_init();
+        return gc_impl_realloc(p, sz, ba, ti);
     }
 
-    size_t gc_extend( void* p, size_t mx, size_t sz, const scope TypeInfo ti = null ) nothrow
+    size_t gc_extend(void* p, size_t mx, size_t sz, const scope TypeInfo ti = null) nothrow
     {
-        return instance.extend( p, mx, sz,ti );
+        if (!isInstanceInit) return 0;
+        return gc_impl_extend(p, mx, sz, ti);
     }
 
-    size_t gc_reserve( size_t sz ) nothrow
+    size_t gc_reserve(size_t sz) nothrow
     {
-        return instance.reserve( sz );
+        if (!isInstanceInit) gc_init();
+        return gc_impl_reserve(sz);
     }
 
     void gc_free( void* p ) nothrow @nogc
     {
-        return instance.free( p );
+        if (!isInstanceInit) {
+            if (p) assert(false, "Invalid memory deallocation");
+            return;
+        }
+        gc_impl_free(p);
     }
 
     void* gc_addrOf( void* p ) nothrow @nogc
     {
-        return instance.addrOf( p );
+        if (!isInstanceInit) return null;
+        return gc_impl_addrOf(p);
     }
 
     size_t gc_sizeOf( void* p ) nothrow @nogc
     {
-        return instance.sizeOf( p );
+        if (!isInstanceInit) return 0;
+        return gc_impl_sizeOf(p);
     }
 
     BlkInfo gc_query( void* p ) nothrow
     {
-        return instance.query( p );
+        if (!isInstanceInit) return BlkInfo.init;
+        return gc_impl_query(p);
     }
 
-    core.memory.GC.Stats gc_stats() @safe nothrow @nogc
+    core.memory.GC.Stats gc_stats() @trusted nothrow @nogc
     {
-        return instance.stats();
+        if (!isInstanceInit) return typeof(return).init;
+        return gc_impl_stats();
     }
 
-    core.memory.GC.ProfileStats gc_profileStats() @safe nothrow @nogc
+    core.memory.GC.ProfileStats gc_profileStats() @trusted nothrow @nogc
     {
-        return instance.profileStats();
+        if (!isInstanceInit) return typeof(return).init;
+        return gc_impl_profileStats();
     }
 
     void gc_addRoot( void* p ) nothrow @nogc
     {
-        return instance.addRoot( p );
+        if (!isInstanceInit) {
+            preinitRoots.insertBack(Root(p));
+            return;
+        }
+        gc_impl_addRoot(p);
     }
 
     void gc_addRange( void* p, size_t sz, const TypeInfo ti = null ) nothrow @nogc
     {
-        return instance.addRange( p, sz, ti );
+        if (!isInstanceInit) {
+            preinitRanges.insertBack(Range(p, p + sz, cast() ti));
+            return;
+        }
+        gc_impl_addRange(p, sz, ti);
     }
 
     void gc_removeRoot( void* p ) nothrow
     {
-        return instance.removeRoot( p );
+        if (!isInstanceInit)
+        {
+            foreach (ref r; preinitRoots)
+            {
+                if (r is p)
+                {
+                    r = preinitRoots.back;
+                    preinitRoots.popBack();
+                    return;
+                }
+            }
+            return;
+        }
+        gc_impl_removeRoot(p);
     }
 
     void gc_removeRange( void* p ) nothrow
     {
-        return instance.removeRange( p );
+        if (!isInstanceInit)
+        {
+            foreach (ref r; preinitRanges)
+            {
+                if (r.pbot is p)
+                {
+                    r = preinitRanges.back;
+                    preinitRanges.popBack();
+                    return;
+                }
+            }
+            return;
+        }
+        gc_impl_removeRange(p);
     }
 
     void gc_runFinalizers(const scope void[] segment ) nothrow
     {
-        return instance.runFinalizers( segment );
+        if (!isInstanceInit) return;
+        gc_impl_runFinalizers(segment);
     }
 
-    bool gc_inFinalizer() nothrow @nogc @safe
+    bool gc_inFinalizer() nothrow @nogc @trusted
     {
-        return instance.inFinalizer();
+        if (!isInstanceInit) return false;
+        return gc_impl_inFinalizer();
     }
 
     ulong gc_allocatedInCurrentThread() nothrow
     {
-        return instance.allocatedInCurrentThread();
+        if (!isInstanceInit) return 0;
+        return gc_impl_allocatedInCurrentThread();
     }
 
     void[] gc_getArrayUsed(void *ptr, bool atomic) nothrow
     {
-        return instance.getArrayUsed( ptr, atomic );
+        if (!isInstanceInit) return null;
+        return gc_impl_getArrayUsed(ptr, atomic);
     }
 
     bool gc_expandArrayUsed(void[] slice, size_t newUsed, bool atomic) nothrow
     {
-        return instance.expandArrayUsed( slice, newUsed, atomic );
+        if (!isInstanceInit) return false;
+        return gc_impl_expandArrayUsed(slice, newUsed, atomic);
     }
 
     size_t gc_reserveArrayCapacity(void[] slice, size_t request, bool atomic) nothrow
     {
-        return instance.reserveArrayCapacity( slice, request, atomic );
+        if (!isInstanceInit) return 0;
+        return gc_impl_reserveArrayCapacity(slice, request, atomic);
     }
 
     bool gc_shrinkArrayUsed(void[] slice, size_t existingUsed, bool atomic) nothrow
     {
-        return instance.shrinkArrayUsed( slice, existingUsed, atomic );
+        if (!isInstanceInit) return 0;
+        return gc_impl_shrinkArrayUsed(slice, existingUsed, atomic);
     }
 
-    GC gc_getProxy() nothrow @nogc
+    void gc_initThread(ThreadBase thread) nothrow @nogc
     {
-        return instance;
+        if (!isInstanceInit) return;
+        gc_impl_initThread(thread);
     }
 
-    // LDC: Don't export these functions by default for each binary linked statically against druntime.
-    //export
-    //{
-        void gc_setProxy( GC proxy )
-        {
-            foreach (root; instance.rootIter)
-            {
-                proxy.addRoot(root);
-            }
-
-            foreach (range; instance.rangeIter)
-            {
-                proxy.addRange(range.pbot, range.ptop - range.pbot, range.ti);
-            }
-
-            proxiedGC = instance; // remember initial GC to later remove roots
-            _instance = proxy;
-        }
-
-        void gc_clrProxy()
-        {
-            foreach (root; proxiedGC.rootIter)
-            {
-                instance.removeRoot(root);
-            }
-
-            foreach (range; proxiedGC.rangeIter)
-            {
-                instance.removeRange(range);
-            }
-
-            _instance = proxiedGC;
-            proxiedGC = null;
-        }
-    //}
-
-    version (LDC)
-    bool gc_isProxied() nothrow @nogc
+    void gc_cleanupThread(ThreadBase thread) nothrow @nogc
     {
-        return proxiedGC !is null;
+        if (!isInstanceInit) return;
+        gc_impl_cleanupThread(thread);
     }
 }

@@ -111,51 +111,201 @@ private
     }
 }
 
-alias gc_t = GC;
-
 /* ============================ GC =============================== */
 
-// register GC in C constructor (_STI_)
-private pragma(crt_constructor) void gc_conservative_ctor()
-{
-    _d_register_conservative_gc();
-}
-
-extern(C) void _d_register_conservative_gc()
-{
-    import core.gc.registry;
-    registerGCFactory("conservative", &initialize);
-}
-
-private pragma(crt_constructor) void gc_precise_ctor()
-{
-    _d_register_precise_gc();
-}
-
-extern(C) void _d_register_precise_gc()
-{
-    import core.gc.registry;
-    registerGCFactory("precise", &initialize_precise);
-}
-
-private GC initialize()
+private ConservativeGC* initialize() nothrow
 {
     import core.lifetime : emplace;
 
-    auto gc = cast(ConservativeGC) cstdlib.malloc(__traits(classInstanceSize, ConservativeGC));
+    auto gc = cast(ConservativeGC*) cstdlib.malloc(ConservativeGC.sizeof);
     if (!gc)
         onOutOfMemoryError();
 
-    return emplace(gc);
+    return emplace(gc, false);
 }
 
-private GC initialize_precise()
+private ConservativeGC* initialize_precise() nothrow
 {
-    ConservativeGC.isPrecise = true;
-    return initialize();
+    import core.lifetime : emplace;
+    
+    auto gc = cast(ConservativeGC*) cstdlib.malloc(ConservativeGC.sizeof);
+    if (!gc)
+        onOutOfMemoryError();
+    
+    return emplace(gc, true);
 }
 
-class ConservativeGC : GC
+__gshared ConservativeGC* gcInst;
+
+extern (C) {
+    bool gc_impl_init() nothrow
+    {
+        gcInst = initialize();
+        return gcInst !is null;
+    }
+    
+    void gc_impl_enable()
+    {
+        gcInst.enable();
+    }
+    
+    void gc_impl_disable()
+    {
+        gcInst.disable();
+    }
+    
+    void gc_impl_collect() nothrow
+    {
+        gcInst.collect();
+    }
+    
+    void gc_impl_minimize() nothrow
+    {
+        gcInst.minimize();
+    }
+    
+    uint gc_impl_getAttr(void* p) nothrow
+    {
+        return gcInst.getAttr(p);
+    }
+    
+    uint gc_impl_setAttr(void* p, uint mask) nothrow
+    {
+        return gcInst.setAttr(p, mask);
+    }
+    
+    uint gc_impl_clrAttr(void* p, uint mask) nothrow
+    {
+        return gcInst.clrAttr(p, mask);
+    }
+    
+    void* gc_impl_malloc(size_t size, uint bits, const TypeInfo ti) nothrow
+    {
+        return gcInst.malloc(size, bits, ti);
+    }
+    
+    BlkInfo gc_impl_qalloc(size_t size, uint bits, const scope TypeInfo ti) nothrow
+    {
+        return gcInst.qalloc(size, bits, ti);
+    }
+    
+    void* gc_impl_calloc(size_t size, uint bits, const TypeInfo ti) nothrow
+    {
+        return gcInst.calloc(size, bits, ti);
+    }
+    
+    void* gc_impl_realloc(void* p, size_t size, uint bits, const TypeInfo ti) nothrow
+    {
+        return gcInst.realloc(p, size, bits, ti);
+    }
+    
+    size_t gc_impl_extend(void* p, size_t minsize, size_t maxsize, const TypeInfo ti) nothrow
+    {
+        return gcInst.extend(p, minsize, maxsize, ti);
+    }
+    
+    size_t gc_impl_reserve(size_t size) nothrow
+    {
+        return gcInst.reserve(size);
+    }
+    
+    void gc_impl_free(void* p) nothrow @nogc
+    {
+        gcInst.free(p);
+    }
+    
+    void* gc_impl_addrOf(void* p) nothrow @nogc
+    {
+        return gcInst.addrOf(p);
+    }
+    
+    size_t gc_impl_sizeOf(void* p) nothrow @nogc
+    {
+        return gcInst.sizeOf(p);
+    }
+    
+    BlkInfo gc_impl_query(void* p) nothrow
+    {
+        return gcInst.query(p);
+    }
+    
+    core.memory.GC.Stats gc_impl_stats() @trusted nothrow @nogc
+    {
+        return gcInst.stats();
+    }
+    
+    core.memory.GC.ProfileStats gc_impl_profileStats() @trusted nothrow @nogc
+    {
+        return gcInst.profileStats();
+    }
+    
+    void gc_impl_addRoot(void* p) nothrow @nogc
+    {
+        gcInst.addRoot(p);
+    }
+    
+    void gc_impl_removeRoot(void* p) nothrow @nogc
+    {
+        gcInst.removeRoot(p);
+    }
+    
+    void gc_impl_addRange(void* p, size_t sz, const TypeInfo ti) nothrow @nogc
+    {
+        gcInst.addRange(p, sz, ti);
+    }
+    
+    void gc_impl_removeRange(void* p) nothrow @nogc
+    {
+        gcInst.removeRange(p);
+    }
+    
+    void gc_impl_runFinalizers(const scope void[] segment) nothrow
+    {
+        gcInst.runFinalizers(segment);
+    }
+    
+    bool gc_impl_inFinalizer() nothrow @nogc @trusted
+    {
+        return gcInst.inFinalizer();
+    }
+    
+    ulong gc_impl_allocatedInCurrentThread() nothrow
+    {
+        return gcInst.allocatedInCurrentThread();
+    }
+    
+    void[] gc_impl_getArrayUsed(void* ptr, bool atomic) nothrow
+    {
+        return gcInst.getArrayUsed(ptr, atomic);
+    }
+    
+    bool gc_impl_expandArrayUsed(void[] slice, size_t newUsed, bool atomic) nothrow @trusted
+    {
+        return gcInst.expandArrayUsed(slice, newUsed, atomic);
+    }
+    
+    size_t gc_impl_reserveArrayCapacity(void[] slice, size_t request, bool atomic) nothrow @trusted
+    {
+        return gcInst.reserveArrayCapacity(slice, request, atomic);
+    }
+    
+    bool gc_impl_shrinkArrayUsed(void[] slice, size_t existingUsed, bool atomic) nothrow
+    {
+        return gcInst.shrinkArrayUsed(slice, existingUsed, atomic);
+    }
+    
+    void gc_impl_initThread(ThreadBase thread) nothrow @nogc
+    {
+        gcInst.initThread(thread);
+    }
+    
+    void gc_impl_cleanupThread(ThreadBase thread) nothrow @nogc
+    {
+        gcInst.cleanupThread(thread);
+    }
+}
+
+struct ConservativeGC
 {
     // For passing to debug code (not thread safe)
     __gshared size_t line;
@@ -185,8 +335,9 @@ class ConservativeGC : GC
      * Throws:
      *  OutOfMemoryError if failed to initialize GC due to not enough memory.
      */
-    this()
+    this(bool precise) nothrow
     {
+        isPrecise = precise;
         //config is assumed to have already been initialized
 
         gcx = cast(Gcx*)cstdlib.calloc(1, Gcx.sizeof);
@@ -201,7 +352,7 @@ class ConservativeGC : GC
     }
 
 
-    ~this()
+    ~this() nothrow
     {
         version (linux)
         {
@@ -225,7 +376,7 @@ class ConservativeGC : GC
      * Enables the GC if disable() was previously called. Must be called
      * for each time disable was called in order to enable the GC again.
      */
-    void enable()
+    void enable() nothrow
     {
         static void go(Gcx* gcx) nothrow
         {
@@ -925,7 +1076,7 @@ class ConservativeGC : GC
      * Params:
      *  p = A pointer to the root of a valid memory block or to null.
      */
-    void free(void *p) nothrow
+    void free(void *p) nothrow @nogc
     {
         if (!p || _inFinalizer)
         {
@@ -1037,7 +1188,7 @@ class ConservativeGC : GC
      * Returns:
      *  The base address of the memory block referenced by p or null on error.
      */
-    void* addrOf(void *p) nothrow
+    void* addrOf(void *p) nothrow @nogc
     {
         if (!p)
         {
@@ -1075,7 +1226,7 @@ class ConservativeGC : GC
      * Returns:
      *  The size in bytes of the memory block referenced by p or zero on error.
      */
-    size_t sizeOf(void *p) nothrow
+    size_t sizeOf(void *p) nothrow @nogc
     {
         if (!p)
         {
@@ -1383,7 +1534,7 @@ class ConservativeGC : GC
     }
 
 
-    core.memory.GC.ProfileStats profileStats() nothrow @trusted
+    core.memory.GC.ProfileStats profileStats() nothrow @trusted @nogc
     {
         typeof(return) ret;
 
@@ -1780,7 +1931,7 @@ struct Gcx
     SmallObjectPool*[Bins.B_NUMSMALL] recoverPool;
     version (Posix) __gshared Gcx* instance;
 
-    void initialize()
+    void initialize() nothrow @nogc
     {
         (cast(byte*)&this)[0 .. Gcx.sizeof] = 0;
         leakDetector.initialize(&this);
@@ -1811,7 +1962,7 @@ struct Gcx
 
     }
 
-    void Dtor()
+    void Dtor() nothrow
     {
         if (config.profile)
         {
@@ -5024,7 +5175,7 @@ debug (LOGGING)
         LogArray current;
         LogArray prev;
 
-        private void initialize(Gcx* gc)
+        private void initialize(Gcx* gc) @nogc
         {
             gcx = gc;
             //debug(PRINTF) printf("+log_init()\n");
@@ -5131,7 +5282,7 @@ else
 {
     struct LeakDetector
     {
-        static void initialize(Gcx* gcx) nothrow { }
+        static void initialize(Gcx* gcx) nothrow @nogc { }
         static void log_malloc(void *p, size_t size) nothrow { }
         static void log_free(void *p, size_t size) nothrow @nogc {}
         static void log_collect() nothrow { }

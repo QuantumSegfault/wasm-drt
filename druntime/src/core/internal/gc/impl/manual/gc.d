@@ -28,273 +28,94 @@ import core.thread.threadbase : ThreadBase;
 import cstdlib = core.stdc.stdlib : calloc, free, malloc, realloc;
 static import core.memory;
 
-extern (C) noreturn onOutOfMemoryError(void* pretend_sideffect = null, string file = __FILE__, size_t line = __LINE__) @trusted pure nothrow @nogc; /* dmd @@@BUG11461@@@ */
+extern (C) noreturn onOutOfMemoryError(void* pretend_sideffect = null,
+        string file = __FILE__, size_t line = __LINE__) @trusted pure nothrow @nogc; /* dmd @@@BUG11461@@@ */
 
-// register GC in C constructor (_STI_)
-private pragma(crt_constructor) void gc_manual_ctor()
+__gshared Array!Root roots;
+__gshared Array!Range ranges;
+
+extern (C) nothrow @nogc:
+
+bool gc_impl_init()
 {
-    _d_register_manual_gc();
+    return true;
 }
 
-extern(C) void _d_register_manual_gc()
+void* gc_impl_malloc(size_t size, uint bits, const TypeInfo ti)
 {
-    import core.gc.registry;
-    registerGCFactory("manual", &initialize);
-}
+    void* p = cstdlib.malloc(size);
 
-private GC initialize()
-{
-    import core.lifetime : emplace;
-
-    auto gc = cast(ManualGC) cstdlib.malloc(__traits(classInstanceSize, ManualGC));
-    if (!gc)
+    if (size && p is null)
         onOutOfMemoryError();
-
-    return emplace(gc);
+    return p;
 }
 
-class ManualGC : GC
+BlkInfo gc_impl_qalloc(size_t size, uint bits, const scope TypeInfo ti)
 {
-    Array!Root roots;
-    Array!Range ranges;
+    BlkInfo retval;
+    retval.base = gc_impl_malloc(size, bits, ti);
+    retval.size = size;
+    retval.attr = bits;
+    return retval;
+}
 
-    this()
+void* gc_impl_calloc(size_t size, uint bits, const TypeInfo ti)
+{
+    void* p = cstdlib.calloc(1, size);
+
+    if (size && p is null)
+        onOutOfMemoryError();
+    return p;
+}
+
+void* gc_impl_realloc(void* p, size_t size, uint bits, const TypeInfo ti)
+{
+    p = cstdlib.realloc(p, size);
+
+    if (size && p is null)
+        onOutOfMemoryError();
+    return p;
+}
+
+void gc_impl_free(void* p)
+{
+    cstdlib.free(p);
+}
+
+void gc_impl_addRoot(void* p)
+{
+    roots.insertBack(Root(p));
+}
+
+void gc_impl_removeRoot(void* p)
+{
+    foreach (ref r; roots)
     {
-    }
-
-    ~this()
-    {
-        // TODO: cannot free as memory is overwritten and
-        //  the monitor is still read in rt_finalize (called by destroy)
-        // cstdlib.free(cast(void*) this);
-    }
-
-    void enable()
-    {
-    }
-
-    void disable()
-    {
-    }
-
-    void collect() nothrow
-    {
-    }
-
-    void minimize() nothrow
-    {
-    }
-
-    uint getAttr(void* p) nothrow
-    {
-        return 0;
-    }
-
-    uint setAttr(void* p, uint mask) nothrow
-    {
-        return 0;
-    }
-
-    uint clrAttr(void* p, uint mask) nothrow
-    {
-        return 0;
-    }
-
-    void* malloc(size_t size, uint bits, const TypeInfo ti) nothrow
-    {
-        void* p = cstdlib.malloc(size);
-
-        if (size && p is null)
-            onOutOfMemoryError();
-        return p;
-    }
-
-    BlkInfo qalloc(size_t size, uint bits, const scope TypeInfo ti) nothrow
-    {
-        BlkInfo retval;
-        retval.base = malloc(size, bits, ti);
-        retval.size = size;
-        retval.attr = bits;
-        return retval;
-    }
-
-    void* calloc(size_t size, uint bits, const TypeInfo ti) nothrow
-    {
-        void* p = cstdlib.calloc(1, size);
-
-        if (size && p is null)
-            onOutOfMemoryError();
-        return p;
-    }
-
-    void* realloc(void* p, size_t size, uint bits, const TypeInfo ti) nothrow
-    {
-        p = cstdlib.realloc(p, size);
-
-        if (size && p is null)
-            onOutOfMemoryError();
-        return p;
-    }
-
-    size_t extend(void* p, size_t minsize, size_t maxsize, const TypeInfo ti) nothrow
-    {
-        return 0;
-    }
-
-    size_t reserve(size_t size) nothrow
-    {
-        return 0;
-    }
-
-    void free(void* p) nothrow @nogc
-    {
-        cstdlib.free(p);
-    }
-
-    /**
-     * Determine the base address of the block containing p.  If p is not a gc
-     * allocated pointer, return null.
-     */
-    void* addrOf(void* p) nothrow @nogc
-    {
-        return null;
-    }
-
-    /**
-     * Determine the allocated size of pointer p.  If p is an interior pointer
-     * or not a gc allocated pointer, return 0.
-     */
-    size_t sizeOf(void* p) nothrow @nogc
-    {
-        return 0;
-    }
-
-    /**
-     * Determine the base address of the block containing p.  If p is not a gc
-     * allocated pointer, return null.
-     */
-    BlkInfo query(void* p) nothrow
-    {
-        return BlkInfo.init;
-    }
-
-    core.memory.GC.Stats stats() nothrow
-    {
-        return typeof(return).init;
-    }
-
-    core.memory.GC.ProfileStats profileStats() nothrow
-    {
-        return typeof(return).init;
-    }
-
-    void addRoot(void* p) nothrow @nogc
-    {
-        roots.insertBack(Root(p));
-    }
-
-    void removeRoot(void* p) nothrow @nogc
-    {
-        foreach (ref r; roots)
+        if (r is p)
         {
-            if (r is p)
-            {
-                r = roots.back;
-                roots.popBack();
-                return;
-            }
+            r = roots.back;
+            roots.popBack();
+            return;
         }
-        assert(false);
     }
+    assert(false);
+}
 
-    @property RootIterator rootIter() return @nogc
-    {
-        return &rootsApply;
-    }
+void gc_impl_addRange(void* p, size_t sz, const TypeInfo ti = null)
+{
+    ranges.insertBack(Range(p, p + sz, cast() ti));
+}
 
-    private int rootsApply(scope int delegate(ref Root) nothrow dg)
+void gc_impl_removeRange(void* p)
+{
+    foreach (ref r; ranges)
     {
-        foreach (ref r; roots)
+        if (r.pbot is p)
         {
-            if (auto result = dg(r))
-                return result;
+            r = ranges.back;
+            ranges.popBack();
+            return;
         }
-        return 0;
     }
-
-    void addRange(void* p, size_t sz, const TypeInfo ti = null) nothrow @nogc
-    {
-        ranges.insertBack(Range(p, p + sz, cast() ti));
-    }
-
-    void removeRange(void* p) nothrow @nogc
-    {
-        foreach (ref r; ranges)
-        {
-            if (r.pbot is p)
-            {
-                r = ranges.back;
-                ranges.popBack();
-                return;
-            }
-        }
-        assert(false);
-    }
-
-    @property RangeIterator rangeIter() return @nogc
-    {
-        return &rangesApply;
-    }
-
-    private int rangesApply(scope int delegate(ref Range) nothrow dg)
-    {
-        foreach (ref r; ranges)
-        {
-            if (auto result = dg(r))
-                return result;
-        }
-        return 0;
-    }
-
-    void runFinalizers(const scope void[] segment) nothrow
-    {
-    }
-
-    bool inFinalizer() nothrow
-    {
-        return false;
-    }
-
-    ulong allocatedInCurrentThread() nothrow
-    {
-        return typeof(return).init;
-    }
-
-    void[] getArrayUsed(void *ptr, bool atomic = false) nothrow
-    {
-        return null;
-    }
-
-    bool expandArrayUsed(void[] slice, size_t newUsed, bool atomic = false) nothrow @safe
-    {
-        return false;
-    }
-
-    size_t reserveArrayCapacity(void[] slice, size_t request, bool atomic = false) nothrow @safe
-    {
-        return 0;
-    }
-
-    bool shrinkArrayUsed(void[] slice, size_t existingUsed, bool atomic = false) nothrow
-    {
-        return false;
-    }
-
-    void initThread(ThreadBase t) nothrow @nogc
-    {
-    }
-
-    void cleanupThread(ThreadBase t) nothrow @nogc
-    {
-    }
+    assert(false);
 }

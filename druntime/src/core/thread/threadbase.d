@@ -138,8 +138,8 @@ class ThreadBase
         m_tlsrtdata = rt_tlsgc_init();
 
         // Let the selected GC initialize anything it needs.
-        import core.internal.gc.proxy : gc_getProxy;
-        gc_getProxy().initThread(this);
+        import core.internal.gc.proxy : gc_initThread;
+        gc_initThread(this);
     }
 
     package void initDataStorage() nothrow

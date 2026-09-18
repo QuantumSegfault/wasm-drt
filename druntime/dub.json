@@ -6,6 +6,9 @@
   "name": "druntime",
   "targetType": "staticLibrary",
   "sourceFiles": ["src/ldc/eh_asm.o"],
+  "excludedSourceFiles": [
+    "src/core/internal/gc/impl/manual/gc.d"
+  ],
   "toolchainRequirements": {
     "dmd": "no",
     "gdc": "no",
