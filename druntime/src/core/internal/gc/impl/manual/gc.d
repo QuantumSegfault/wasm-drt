@@ -41,6 +41,26 @@ bool gc_impl_init()
     return true;
 }
 
+void gc_impl_enable()
+{
+}
+
+void gc_impl_disable()
+{
+}
+
+void gc_impl_collect()
+{
+}
+
+void gc_impl_minimize()
+{
+}
+
+uint gc_impl_getAttr(void*) => 0;
+uint gc_impl_setAttr(void*, uint) => 0;
+uint gc_impl_clrAttr(void*, uint) => 0;
+
 void* gc_impl_malloc(size_t size, uint bits, const TypeInfo ti)
 {
     void* p = cstdlib.malloc(size);
@@ -77,10 +97,19 @@ void* gc_impl_realloc(void* p, size_t size, uint bits, const TypeInfo ti)
     return p;
 }
 
+size_t gc_impl_extend(void*, size_t, size_t, const TypeInfo) => 0;
+size_t gc_impl_reserve(size_t) => 0;
+
 void gc_impl_free(void* p)
 {
     cstdlib.free(p);
 }
+
+void* gc_impl_addrOf(void*) => null;
+size_t gc_impl_sizeOf(void*) => 0;
+BlkInfo gc_impl_query(void*) => BlkInfo.init;
+core.memory.GC.Stats gc_impl_stats() @safe => typeof(return).init;
+core.memory.GC.ProfileStats gc_impl_profileStats() @safe => typeof(return).init;
 
 void gc_impl_addRoot(void* p)
 {
@@ -118,4 +147,23 @@ void gc_impl_removeRange(void* p)
         }
     }
     assert(false);
+}
+
+void gc_impl_runFinalizers(const scope void[])
+{
+}
+
+bool gc_impl_inFinalizer() @safe => false;
+ulong gc_impl_allocatedInCurrentThread() => 0;
+void[] gc_impl_getArrayUsed(void*, bool) => null;
+bool gc_impl_expandArrayUsed(void[], size_t, bool) @safe => false;
+size_t gc_impl_reserveArrayCapacity(void[], size_t, bool) @safe => 0;
+bool gc_impl_shrinkArrayUsed(void[], size_t, bool) => false;
+
+void gc_impl_initThread(ThreadBase)
+{
+}
+
+void gc_impl_cleanupThread(ThreadBase)
+{
 }

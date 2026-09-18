@@ -5,10 +5,8 @@
   "copyright": "Copyright © 1999-2026 The D Language Foundation; Copyright © 2026, Demetrius Kanios",
   "name": "druntime",
   "targetType": "staticLibrary",
-  "sourceFiles": ["src/ldc/eh_asm.o"],
-  "excludedSourceFiles": [
-    "src/core/internal/gc/impl/manual/gc.d"
-  ],
+  "sourceFiles": ["src/ldc/eh_asm.o", "src/core/internal/gc/impl/conservative/gc.d"],
+  "excludedSourceFiles": ["src/core/internal/gc/impl/**/*.d"],
   "toolchainRequirements": {
     "dmd": "no",
     "gdc": "no",
