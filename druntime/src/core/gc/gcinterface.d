@@ -16,12 +16,9 @@ module core.gc.gcinterface;
 import core.thread.threadbase : ThreadBase;
 
 static import core.memory;
+
 alias BlkAttr = core.memory.GC.BlkAttr;
 alias BlkInfo = core.memory.GC.BlkInfo;
-
-alias RootIterator = int delegate(scope int delegate(ref Root) nothrow dg);
-alias RangeIterator = int delegate(scope int delegate(ref Range) nothrow dg);
-
 
 struct Root
 {
@@ -157,11 +154,6 @@ interface GC
     void removeRoot(void* p) nothrow @nogc;
 
     /**
-     *
-     */
-    @property RootIterator rootIter() @nogc;
-
-    /**
      * add range to scan for roots
      */
     void addRange(void* p, size_t sz, const TypeInfo ti) nothrow @nogc;
@@ -170,11 +162,6 @@ interface GC
      * remove range
      */
     void removeRange(void* p) nothrow @nogc;
-
-    /**
-     *
-     */
-    @property RangeIterator rangeIter() @nogc;
 
     /**
      * run finalizers

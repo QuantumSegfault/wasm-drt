@@ -19,7 +19,6 @@ struct Config
     bool disable;            // start disabled
     bool fork = false;       // optional concurrent behaviour
     ubyte profile;           // enable profiling with summary when terminating program
-    string gc = "conservative"; // select gc implementation conservative|precise|manual
 
     @MemVal size_t initReserve;      // initial reserve (bytes)
     @MemVal size_t minPoolSize = 1  << 20;  // initial and minimum pool size (bytes)
@@ -46,18 +45,10 @@ struct Config
 
     void help() @nogc nothrow
     {
-        import core.gc.registry : registeredGCFactories;
-
         printf("GC options are specified as white space separated assignments:
     disable:0|1    - start disabled (%d)
     fork:0|1       - set fork behaviour (%d)
-    profile:0|1|2  - enable profiling with summary when terminating program (%d)
-    gc:".ptr, disable, fork, profile);
-        foreach (i, entry; registeredGCFactories)
-        {
-            if (i) printf("|");
-            printf("%.*s", cast(int) entry.name.length, entry.name.ptr);
-        }
+    profile:0|1|2  - enable profiling with summary when terminating program (%d)".ptr, disable, fork, profile);
         auto _initReserve = initReserve.bytes2prettyStruct;
         auto _minPoolSize = minPoolSize.bytes2prettyStruct;
         auto _maxPoolSize = maxPoolSize.bytes2prettyStruct;

@@ -1396,15 +1396,6 @@ struct ConservativeGC
     }
 
     /**
-     * Returns an iterator allowing roots to be traversed via a foreach loop.
-     */
-    @property RootIterator rootIter() @nogc
-    {
-        return &gcx.rootsApply;
-    }
-
-
-    /**
      * Add range to scan for roots. If p is null or sz is 0, no operation is performed.
      *
      * Params:
@@ -1440,16 +1431,6 @@ struct ConservativeGC
 
         gcx.removeRange(p);
     }
-
-
-    /**
-     * Returns an iterator allowing ranges to be traversed via a foreach loop.
-     */
-    @property RangeIterator rangeIter() @nogc
-    {
-        return &gcx.rangesApply;
-    }
-
 
     /**
      * Run all finalizers in the code segment.
@@ -2103,20 +2084,6 @@ struct Gcx
         rootsLock.unlock();
     }
 
-
-    /**
-     *
-     */
-    int rootsApply(scope int delegate(ref Root) nothrow dg) nothrow
-    {
-        rootsLock.lock();
-        scope (failure) rootsLock.unlock();
-        auto ret = roots.opApply(dg);
-        rootsLock.unlock();
-        return ret;
-    }
-
-
     /**
      *
      */
@@ -2149,19 +2116,6 @@ struct Gcx
         // other than the one the range was allocated on.
         //assert(zero);
     }
-
-    /**
-     *
-     */
-    int rangesApply(scope int delegate(ref Range) nothrow dg) nothrow
-    {
-        rangesLock.lock();
-        scope (failure) rangesLock.unlock();
-        auto ret = ranges.opApply(dg);
-        rangesLock.unlock();
-        return ret;
-    }
-
 
     /**
      *
