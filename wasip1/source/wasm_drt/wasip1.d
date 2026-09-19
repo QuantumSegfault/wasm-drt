@@ -24,7 +24,7 @@ version (LDC) {
     );
 } else static assert("Unknown compiler for WASI.");
 
-@nogc nothrow:
+@nogc nothrow pragma(inline, true):
 
 static assert(byte.alignof == 1, "non-wasi data layout");
 static assert(ubyte.alignof == 1, "non-wasi data layout");
@@ -431,7 +431,7 @@ extern(C) struct IOVec {
     ubyte* buf;
     size_t bufLen;
 
-@safe @nogc pure nothrow:
+@safe @nogc pure nothrow pragma(inline, true):
     this(ubyte[] slice) @trusted {
         buf = slice.ptr;
         bufLen = slice.length;
@@ -463,7 +463,7 @@ extern(C) struct CIOVec {
     const(ubyte)* buf;
     size_t bufLen;
 
-@safe @nogc pure nothrow:
+@safe @nogc pure nothrow pragma(inline, true):
     this(const ubyte[] slice) @trusted {
         buf = slice.ptr;
         bufLen = slice.length;
