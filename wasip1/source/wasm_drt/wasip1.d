@@ -430,12 +430,64 @@ alias Fd = int;
 extern(C) struct IOVec {
     ubyte* buf;
     size_t bufLen;
+
+@safe @nogc pure nothrow:
+    this(ubyte[] slice) @trusted {
+        buf = slice.ptr;
+        bufLen = slice.length;
+    }
+    
+    this(char[] slice) @trusted {
+        buf = cast(ubyte*)slice.ptr;
+        bufLen = slice.length;
+    }
+
+    void opAssign(ubyte[] slice) @trusted {
+        buf = slice.ptr;
+        bufLen = slice.length;
+    }
+
+    void opAssign(char[] slice) @trusted {
+        buf = cast(ubyte*)slice.ptr;
+        bufLen = slice.length;
+    }
+
+    alias asSlice this;
+    ubyte[] asSlice() @trusted {
+        return (ptr && length) ? ptr[0..length] : null;
+    }
 }
 
 /// A region of memory for scatter/gather writes.
 extern(C) struct CIOVec {
     const(ubyte)* buf;
     size_t bufLen;
+
+@safe @nogc pure nothrow:
+    this(const ubyte[] slice) @trusted {
+        buf = slice.ptr;
+        bufLen = slice.length;
+    }
+    
+    this(const char[] slice) @trusted {
+        buf = cast(const ubyte*)slice.ptr;
+        bufLen = slice.length;
+    }
+
+    void opAssign(const ubyte[] slice) @trusted {
+        buf = slice.ptr;
+        bufLen = slice.length;
+    }
+
+    void opAssign(const char[] slice) @trusted {
+        buf = cast(const ubyte*)slice.ptr;
+        bufLen = slice.length;
+    }
+
+    alias asSlice this;
+    const(ubyte)[] asSlice() @trusted {
+        return (ptr && length) ? ptr[0..length] : null;
+    }
 }
 
 ///
