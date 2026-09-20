@@ -14,21 +14,6 @@
 
 module core.stdc.string;
 
-version (OSX)
-    version = Darwin;
-else version (iOS)
-    version = Darwin;
-else version (TVOS)
-    version = Darwin;
-else version (WatchOS)
-    version = Darwin;
-
-// Those libs don't expose the mandated C interface
-version (CRuntime_Glibc)
-    version = ReturnStrerrorR;
-else version (CRuntime_UClibc)
-    version = ReturnStrerrorR;
-
 extern (C):
 nothrow:
 @nogc:
@@ -39,11 +24,7 @@ inout(void)* memchr(return scope inout void* s, int c, size_t n) pure;
 int   memcmp(scope const void* s1, scope const void* s2, size_t n) pure;
 ///
 void* memcpy(return scope void* s1, scope const void* s2, size_t n) pure;
-version (Windows)
-{
-    ///
-    int memicmp(scope const char* s1, scope const char* s2, size_t n);
-}
+
 ///
 void* memmove(return scope void* s1, scope const void* s2, size_t n) pure;
 ///
@@ -68,23 +49,8 @@ char*  strndup(scope const char *str, size_t size);
 ///
 char*  strerror(int errnum);
 // This `strerror_r` definition is not following the POSIX standard
-version (ReturnStrerrorR)
-{
-    ///
-    const(char)* strerror_r(int errnum, return scope char* buf, size_t buflen);
-}
-// This one is
-else version (CRuntime_Newlib)
-{
-    ///
-    pragma(mangle, "__xpg_strerror_r")
-    int strerror_r(int errnum, scope char* buf, size_t buflen);
-}
-else
-{
-    ///
-    int strerror_r(int errnum, scope char* buf, size_t buflen);
-}
+///
+int strerror_r(int errnum, scope char* buf, size_t buflen);
 ///
 size_t strlen(scope const char* s) pure;
 ///

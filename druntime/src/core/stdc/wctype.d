@@ -22,44 +22,10 @@ extern (C):
 nothrow:
 @nogc:
 
-version (CRuntime_Glibc)
-{
-    ///
-    alias wctype_t = c_ulong;
-    ///
-    alias wctrans_t = const(int)*;
-}
-else version (CRuntime_Musl)
-{
-    ///
-    version (Emscripten)
-        alias wctype_t = uint; // for wasm64 too
-    else
-        alias wctype_t = c_ulong;
-    ///
-    alias wctrans_t = const(int)*;
-}
-else version (FreeBSD)
-{
-    ///
-    alias wctype_t = c_ulong;
-    ///
-    alias wctrans_t = int;
-}
-else version (CRuntime_Bionic)
-{
-    ///
-    alias wctype_t = c_long;
-    ///
-    alias wctrans_t = const(void)*;
-}
-else
-{
-    ///
-    alias wctrans_t = wchar_t;
-    ///
-    alias wctype_t = wchar_t;
-}
+///
+alias wctrans_t = wchar_t;
+///
+alias wctype_t = wchar_t;
 
 ///
 pure int iswalnum(wint_t wc);

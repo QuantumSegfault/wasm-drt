@@ -24,13 +24,5 @@ alias nullptr_t = typeof(null);
 
 // size_t and ptrdiff_t are defined in the object module.
 
-version (Windows)
-{
-    ///
-    alias wchar_t = wchar;
-}
-else version (Posix)
-{
-    ///
-    alias wchar_t = dchar;
-}
+///
+alias wchar_t = dchar;

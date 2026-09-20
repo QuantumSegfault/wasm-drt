@@ -109,49 +109,7 @@ version (StdDdoc)
 else
 {
 
-version (OSX)
-    version = Darwin;
-else version (iOS)
-    version = Darwin;
-else version (TVOS)
-    version = Darwin;
-else version (WatchOS)
-    version = Darwin;
-
-version (GNU)
-{
-    import gcc.builtins;
-
-    alias c_long = __builtin_clong;
-    alias c_ulong = __builtin_culong;
-
-    enum __c_long  : __builtin_clong;
-    enum __c_ulong : __builtin_culong;
-
-    alias cpp_long = __c_long;
-    alias cpp_ulong = __c_ulong;
-
-    enum __c_longlong  : __builtin_clonglong;
-    enum __c_ulonglong : __builtin_culonglong;
-
-    alias cpp_longlong = __c_longlong;
-    alias cpp_ulonglong = __c_ulonglong;
-}
-else version (Windows)
-{
-    enum __c_long  : int;
-    enum __c_ulong : uint;
-
-    alias c_long = int;
-    alias c_ulong = uint;
-
-    alias cpp_long = __c_long;
-    alias cpp_ulong = __c_ulong;
-
-    alias cpp_longlong = long;
-    alias cpp_ulonglong = ulong;
-}
-else version (Posix)
+version (Posix)
 {
   static if ( (void*).sizeof > int.sizeof )
   {
@@ -183,86 +141,14 @@ else version (Posix)
   }
 }
 
-version (GNU)
-    alias c_long_double = real;
-else version (LDC)
+version (LDC)
     alias c_long_double = real; // 64-bit real for MSVC targets
-else version (SDC)
-{
-    version (X86)
-        alias c_long_double = real;
-    else version (X86_64)
-        alias c_long_double = real;
-}
-else version (CRuntime_Microsoft)
-{
-    /* long double is 64 bits, not 80 bits, but is mangled differently
-     * than double. To distinguish double from long double, create a wrapper to represent
-     * long double, then recognize that wrapper specially in the compiler
-     * to generate the correct name mangling and correct function call/return
-     * ABI conformance.
-     */
-    enum __c_long_double : double;
-
-    alias c_long_double = __c_long_double;
-}
-else version (DigitalMars)
-{
-    version (X86)
-    {
-        alias c_long_double = real;
-    }
-    else version (X86_64)
-    {
-        version (linux)
-            alias c_long_double = real;
-        else version (FreeBSD)
-            alias c_long_double = real;
-        else version (OpenBSD)
-            alias c_long_double = real;
-        else version (NetBSD)
-            alias c_long_double = real;
-        else version (DragonFlyBSD)
-            alias c_long_double = real;
-        else version (Solaris)
-            alias c_long_double = real;
-        else version (Darwin)
-            alias c_long_double = real;
-    }
-    else version (AArch64)
-    {
-        version (linux)
-            alias c_long_double = real;
-        else version (FreeBSD)
-            alias c_long_double = real;
-        else version (OpenBSD)
-            alias c_long_double = real;
-        else version (NetBSD)
-            alias c_long_double = real;
-        else version (DragonFlyBSD)
-            alias c_long_double = real;
-        else version (Solaris)
-            alias c_long_double = real;
-        else version (Darwin)
-            alias c_long_double = real;
-    }
-}
 
 static assert(is(c_long_double), "c_long_double needs to be declared for this platform/architecture.");
 
-version (Darwin)
-{
-    alias cpp_size_t = cpp_ulong;
-    version (D_LP64)
-        alias cpp_ptrdiff_t = cpp_long;
-    else
-        alias cpp_ptrdiff_t = ptrdiff_t;
-}
-else
-{
-    alias cpp_size_t = size_t;
-    alias cpp_ptrdiff_t = ptrdiff_t;
-}
+
+alias cpp_size_t = size_t;
+alias cpp_ptrdiff_t = ptrdiff_t;
 
 /** ABI layout of native complex types.
  */
@@ -631,40 +517,3 @@ version (unittest)
 }
 
 }
-
-
-// Returns the mangled name for the 64-bit time_t versions of
-// functions affected by musl's transition to 64-bit time_t.
-// https://musl.libc.org/time64.html
-version (CRuntime_Musl)
-{
-    version (Emscripten)
-        enum muslRedirTime64 = false;
-    else version (CRuntime_Musl_Pre_Time64)
-        enum muslRedirTime64 = false;
-    else
-    {
-        // time_t was defined as a C long in older Musl versions.
-        enum muslRedirTime64 = (c_long.sizeof == 4);
-    }
-}
-else
-    enum muslRedirTime64 = false;
-
-package(core) template muslRedirTime64Mangle(string name, string redirectedName)
-{
-    static if (muslRedirTime64)
-        enum muslRedirTime64Mangle = redirectedName;
-    else
-        enum muslRedirTime64Mangle = name;
-}
-
-version (PPC64)
-{
-    version (CRuntime_Glibc)
-        enum PPCUseIEEE128 = real.mant_dig == 113;
-    else
-        enum PPCUseIEEE128 = false; // no dual-ABI mangling for e.g. FreeBSD
-}
-else
-    enum PPCUseIEEE128 = false;

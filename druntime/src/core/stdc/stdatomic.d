@@ -70,69 +70,32 @@ enum
     ATOMIC_CHAR8_T_LOCK_FREE = ATOMIC_CHAR_LOCK_FREE,
 }
 
-version (DigitalMars)
-{
-    alias atomic_signal_fence = atomic_signal_fence_impl; ///
-
-    // these all use inline assembly, so will unlikely produce the codegen a user will expect
-    version(none)
-    {
-        alias atomic_flag_clear = atomic_flag_clear_impl; ///
-        alias atomic_flag_clear_explicit = atomic_flag_clear_explicit_impl; ///
-        alias atomic_flag_test_and_set = atomic_flag_test_and_set_impl; ///
-        alias atomic_flag_test_and_set_explicit = atomic_flag_test_and_set_explicit_impl; ///
-        alias atomic_thread_fence = atomic_thread_fence_impl; ///
-        alias atomic_store = atomic_store_impl; ///
-        alias atomic_store_explicit = atomic_store_explicit_impl; ///
-        alias atomic_load = atomic_load_impl; ///
-        alias atomic_load_explicit = atomic_load_explicit_impl; ///
-        alias atomic_exchange = atomic_exchange_impl; ///
-        alias atomic_exchange_explicit = atomic_exchange_explicit_impl; ///
-        alias atomic_compare_exchange_strong = atomic_compare_exchange_strong_impl; ///
-        alias atomic_compare_exchange_weak = atomic_compare_exchange_weak_impl; ///
-        alias atomic_compare_exchange_strong_explicit = atomic_compare_exchange_strong_explicit_impl; ///
-        alias atomic_compare_exchange_weak_explicit = atomic_compare_exchange_weak_explicit_impl; ///
-        alias atomic_fetch_add = atomic_fetch_add_impl; ///
-        alias atomic_fetch_add_explicit = atomic_fetch_add_explicit_impl; ///
-        alias atomic_fetch_sub = atomic_fetch_sub_impl; ///
-        alias atomic_fetch_sub_explicit = atomic_fetch_sub_explicit_impl; ///
-        alias atomic_fetch_or = atomic_fetch_or_impl; ///
-        alias atomic_fetch_or_explicit = atomic_fetch_or_explicit_impl; ///
-        alias atomic_fetch_xor = atomic_fetch_xor_impl; ///
-        alias atomic_fetch_xor_explicit = atomic_fetch_xor_explicit_impl; ///
-        alias atomic_fetch_and = atomic_fetch_and_impl; ///
-        alias atomic_fetch_and_explicit = atomic_fetch_and_explicit_impl; ///
-    }
-}
-else
-{
-    alias atomic_flag_clear = atomic_flag_clear_impl; ///
-    alias atomic_flag_clear_explicit = atomic_flag_clear_explicit_impl; ///
-    alias atomic_flag_test_and_set = atomic_flag_test_and_set_impl; ///
-    alias atomic_flag_test_and_set_explicit = atomic_flag_test_and_set_explicit_impl; ///
-    alias atomic_signal_fence = atomic_signal_fence_impl; ///
-    alias atomic_thread_fence = atomic_thread_fence_impl; ///
-    alias atomic_store = atomic_store_impl; ///
-    alias atomic_store_explicit = atomic_store_explicit_impl; ///
-    alias atomic_load = atomic_load_impl; ///
-    alias atomic_load_explicit = atomic_load_explicit_impl; ///
-    alias atomic_exchange = atomic_exchange_impl; ///
-    alias atomic_exchange_explicit = atomic_exchange_explicit_impl; ///
-    alias atomic_compare_exchange_strong = atomic_compare_exchange_strong_impl; ///
-    alias atomic_compare_exchange_weak = atomic_compare_exchange_weak_impl; ///
-    alias atomic_compare_exchange_strong_explicit = atomic_compare_exchange_strong_explicit_impl; ///
-    alias atomic_compare_exchange_weak_explicit = atomic_compare_exchange_weak_explicit_impl; ///
-    alias atomic_fetch_add = atomic_fetch_add_impl; ///
-    alias atomic_fetch_add_explicit = atomic_fetch_add_explicit_impl; ///
-    alias atomic_fetch_sub = atomic_fetch_sub_impl; ///
-    alias atomic_fetch_sub_explicit = atomic_fetch_sub_explicit_impl; ///
-    alias atomic_fetch_or = atomic_fetch_or_impl; ///
-    alias atomic_fetch_or_explicit = atomic_fetch_or_explicit_impl; ///
-    alias atomic_fetch_xor = atomic_fetch_xor_impl; ///
-    alias atomic_fetch_xor_explicit = atomic_fetch_xor_explicit_impl; ///
-    alias atomic_fetch_and = atomic_fetch_and_impl; ///
-    alias atomic_fetch_and_explicit = atomic_fetch_and_explicit_impl; ///
-}
+alias atomic_flag_clear = atomic_flag_clear_impl; ///
+alias atomic_flag_clear_explicit = atomic_flag_clear_explicit_impl; ///
+alias atomic_flag_test_and_set = atomic_flag_test_and_set_impl; ///
+alias atomic_flag_test_and_set_explicit = atomic_flag_test_and_set_explicit_impl; ///
+alias atomic_signal_fence = atomic_signal_fence_impl; ///
+alias atomic_thread_fence = atomic_thread_fence_impl; ///
+alias atomic_store = atomic_store_impl; ///
+alias atomic_store_explicit = atomic_store_explicit_impl; ///
+alias atomic_load = atomic_load_impl; ///
+alias atomic_load_explicit = atomic_load_explicit_impl; ///
+alias atomic_exchange = atomic_exchange_impl; ///
+alias atomic_exchange_explicit = atomic_exchange_explicit_impl; ///
+alias atomic_compare_exchange_strong = atomic_compare_exchange_strong_impl; ///
+alias atomic_compare_exchange_weak = atomic_compare_exchange_weak_impl; ///
+alias atomic_compare_exchange_strong_explicit = atomic_compare_exchange_strong_explicit_impl; ///
+alias atomic_compare_exchange_weak_explicit = atomic_compare_exchange_weak_explicit_impl; ///
+alias atomic_fetch_add = atomic_fetch_add_impl; ///
+alias atomic_fetch_add_explicit = atomic_fetch_add_explicit_impl; ///
+alias atomic_fetch_sub = atomic_fetch_sub_impl; ///
+alias atomic_fetch_sub_explicit = atomic_fetch_sub_explicit_impl; ///
+alias atomic_fetch_or = atomic_fetch_or_impl; ///
+alias atomic_fetch_or_explicit = atomic_fetch_or_explicit_impl; ///
+alias atomic_fetch_xor = atomic_fetch_xor_impl; ///
+alias atomic_fetch_xor_explicit = atomic_fetch_xor_explicit_impl; ///
+alias atomic_fetch_and = atomic_fetch_and_impl; ///
+alias atomic_fetch_and_explicit = atomic_fetch_and_explicit_impl; ///
 
 ///
 pragma(inline, true)

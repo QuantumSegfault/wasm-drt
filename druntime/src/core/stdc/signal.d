@@ -24,9 +24,7 @@ version (CRuntime_WASI)
 {
     import core.stdc.config : c_long;
     alias c_long sig_atomic_t;
-} else {
-    alias int sig_atomic_t;
-}
+} else static assert (0);
 
 private alias sigfn_t = void function(int);
 
@@ -56,61 +54,7 @@ version (CRuntime_WASI)
     enum SIGSEGV    = 11; // Invalid memory reference
     ///
     enum SIGTERM    = 15; // Termination
-}
-else version (Posix)
-{
-    ///
-    enum SIG_ERR    = cast(sigfn_t) -1;
-    ///
-    enum SIG_DFL    = cast(sigfn_t) 0;
-    version (Emscripten)
-    {
-        ///
-        enum SIG_IGN    = cast(sigfn_t) -2;
-    }
-    else
-    {
-        ///
-        enum SIG_IGN    = cast(sigfn_t) 1;
-    }
-
-    // standard C signals
-    ///
-    enum SIGABRT    = 6;  // Abnormal termination
-    ///
-    enum SIGFPE     = 8;  // Floating-point error
-    ///
-    enum SIGILL     = 4;  // Illegal hardware instruction
-    ///
-    enum SIGINT     = 2;  // Terminal interrupt character
-    ///
-    enum SIGSEGV    = 11; // Invalid memory reference
-    ///
-    enum SIGTERM    = 15; // Termination
-}
-else version (Windows)
-{
-    ///
-    enum SIG_ERR    = cast(sigfn_t) -1;
-    ///
-    enum SIG_DFL    = cast(sigfn_t) 0;
-    ///
-    enum SIG_IGN    = cast(sigfn_t) 1;
-
-    // standard C signals
-    ///
-    enum SIGABRT    = 22; // Abnormal termination
-    ///
-    enum SIGFPE     = 8;  // Floating-point error
-    ///
-    enum SIGILL     = 4;  // Illegal hardware instruction
-    ///
-    enum SIGINT     = 2;  // Terminal interrupt character
-    ///
-    enum SIGSEGV    = 11; // Invalid memory reference
-    ///
-    enum SIGTERM    = 15; // Termination
-}
+} else static assert(0);
 
 ///
 sigfn_t signal(int sig, sigfn_t func);

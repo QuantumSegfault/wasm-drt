@@ -17,21 +17,6 @@ module core.stdc.stdlib;
 import core.stdc.config;
 public import core.stdc.stddef; // for wchar_t
 
-version (OSX)
-    version = Darwin;
-else version (iOS)
-    version = Darwin;
-else version (TVOS)
-    version = Darwin;
-else version (WatchOS)
-    version = Darwin;
-
-version (CRuntime_Glibc)
-    version = AlignedAllocSupported;
-else version (CRuntime_Newlib)
-    version = AlignedAllocSupported;
-else {}
-
 extern (C):
 
 /* Placed outside `nothrow` and `@nogc` in order to not constrain what the callback does.
@@ -89,19 +74,7 @@ enum EXIT_FAILURE = 1;
 enum MB_CUR_MAX   = 1;
 
 ///
-version (Windows)      enum RAND_MAX = 0x7fff;
-else version (CRuntime_Glibc)  enum RAND_MAX = 0x7fffffff;
-else version (Darwin)  enum RAND_MAX = 0x7fffffff;
-else version (FreeBSD) enum RAND_MAX = 0x7ffffffd;
-else version (NetBSD)  enum RAND_MAX = 0x7fffffff;
-else version (OpenBSD) enum RAND_MAX = 0x7fffffff;
-else version (DragonFlyBSD) enum RAND_MAX = 0x7fffffff;
-else version (Solaris) enum RAND_MAX = 0x7fff;
-else version (CRuntime_Bionic) enum RAND_MAX = 0x7fffffff;
-else version (CRuntime_Musl) enum RAND_MAX = 0x7fffffff;
-else version (CRuntime_WASI) enum RAND_MAX = 0x7fffffff;
-else version (CRuntime_Newlib) enum RAND_MAX = 0x7fffffff;
-else version (CRuntime_UClibc) enum RAND_MAX = 0x7fffffff;
+version (CRuntime_WASI) enum RAND_MAX = 0x7fffffff;
 else static assert( false, "Unsupported platform" );
 
 ///
@@ -126,38 +99,8 @@ c_ulong strtoul(scope inout(char)* nptr, scope inout(char)** endptr, int base);
 ///
 ulong   strtoull(scope inout(char)* nptr, scope inout(char)** endptr, int base);
 
-version (CRuntime_Microsoft)
-{
-    version (MinGW)
-    {
-        ///
-        real __mingw_strtold(scope inout(char)* nptr, scope inout(char)** endptr);
-        ///
-        alias strtold = __mingw_strtold;
-    }
-    else
-    {
-        // strtold exists starting from VS2013, so we give it D linkage to avoid link errors
-        ///
-        extern (D) real strtold(scope inout(char)* nptr, inout(char)** endptr)
-        {   // Fake it 'till we make it
-            return strtod(nptr, endptr);
-        }
-    }
-}
-else
-{
-    static if (PPCUseIEEE128)
-    {
-        real __strtoieee128(scope inout(char)* nptr, scope inout(char)** endptr);
-        alias strtold = __strtoieee128;
-    }
-    else
-    {
-        /// Added to Bionic since Lollipop.
-        real strtold(scope inout(char)* nptr, scope inout(char)** endptr);
-    }
-}
+/// Added to Bionic since Lollipop.
+real strtold(scope inout(char)* nptr, scope inout(char)** endptr);
 
 // No unsafe pointer manipulation.
 @trusted
@@ -180,12 +123,6 @@ void*   calloc(size_t nmemb, size_t size);
 void*   realloc(void* ptr, size_t size);
 ///
 void    free(void* ptr);
-
-/// since C11
-version (AlignedAllocSupported)
-{
-    void* aligned_alloc(size_t alignment, size_t size);
-}
 
 ///
 noreturn abort() @safe;
@@ -230,31 +167,8 @@ size_t  mbstowcs(scope wchar_t* pwcs, scope const char* s, size_t n);
 ///
 size_t  wcstombs(scope char* s, scope const wchar_t* pwcs, size_t n);
 
-///
-version (DigitalMars)
-{
-    // See malloc comment about @trusted.
-    void* alloca(size_t size) pure; // non-standard
-}
-else version (GNU)
-{
-    void* alloca(size_t size) pure; // compiler intrinsic
-}
-else version (LDC)
+version (LDC)
 {
     pragma(LDC_alloca)
     void* alloca(size_t size) pure;
-}
-
-version (CRuntime_Microsoft)
-{
-    ///
-    ulong  _strtoui64(scope inout(char)*, scope inout(char)**,int);
-    ///
-    ulong  _wcstoui64(scope inout(wchar)*, scope inout(wchar)**,int);
-
-    ///
-    long  _strtoi64(scope inout(char)*, scope inout(char)**,int);
-    ///
-    long  _wcstoi64(scope inout(wchar)*, scope inout(wchar)**,int);
-}
+} else static assert (0);

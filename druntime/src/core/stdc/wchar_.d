@@ -26,127 +26,7 @@ extern (C):
 nothrow:
 @nogc:
 
-version (CRuntime_Glibc)
-{
-    ///
-    struct mbstate_t
-    {
-        int __count;
-        union ___value
-        {
-            wint_t __wch = 0;
-            char[4] __wchb;
-        }
-        ___value __value;
-    }
-}
-else version (FreeBSD)
-{
-    ///
-    union __mbstate_t // <sys/_types.h>
-    {
-        char[128]   _mbstate8 = 0;
-        long        _mbstateL;
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (NetBSD)
-{
-    ///
-    union __mbstate_t
-    {
-        int64_t   __mbstateL;
-        char[128] __mbstate8;
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (OpenBSD)
-{
-    ///
-    union __mbstate_t
-    {
-        char[128] __mbstate8 = 0;
-        int64_t   __mbstateL;
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (DragonFlyBSD)
-{
-    ///
-    union __mbstate_t                   // <sys/stdint.h>
-    {
-        char[128]   _mbstate8 = 0;
-        long        _mbstateL;
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (Solaris)
-{
-    ///
-    struct __mbstate_t
-    {
-        version (D_LP64)
-        {
-            long[4] __filler;
-        }
-        else
-        {
-            int[6] __filler;
-        }
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (CRuntime_Newlib)
-{
-    ///
-    struct mbstate_t
-    {
-        int __count;
-        union ___value
-        {
-            wint_t __wch = 0;
-            char[4] __wchb;
-        }
-        ___value __value;
-    }
-}
-else version (CRuntime_UClibc)
-{
-    ///
-    struct mbstate_t
-    {
-        wchar_t __mask = 0;
-        wchar_t __wc = 0;
-    }
-}
-else version (Windows)
-{
-    ///
-    struct __mbstate_t
-    {
-        int __count;
-        union ___value
-        {
-            wint_t __wch = 0;
-            char[4] __wchb;
-        }
-        ___value __value;
-    }
-
-    ///
-    alias mbstate_t = __mbstate_t;
-}
-else version (Emscripten)
+version (Emscripten)
 {
     ///
     struct __mbstate_t
@@ -170,11 +50,7 @@ else version (CRuntime_WASI)
     ///
     alias mbstate_t = __mbstate_t;
 }
-else
-{
-    ///
-    alias mbstate_t = int;
-}
+else static assert(9);
 
 version (WASI) // incl. Emscripten
 {
@@ -184,81 +60,33 @@ version (WASI) // incl. Emscripten
     ///
     enum WEOF = uint.max;
 }
-else
-{
-    ///
-    alias wint_t = wchar_t;
+else static assert(9);
 
-    ///
-    enum wchar_t WEOF = 0xFFFF;
-}
 
-version (CRuntime_Glibc)
-{
-    ///
-    int fwprintf(FILE* stream, const scope wchar_t* format, scope const ...);
-    ///
-    int __isoc99_fwscanf(FILE* stream, const scope wchar_t* format, scope ...);
-    ///
-    alias fwscanf = __isoc99_fwscanf;
-    ///
-    int swprintf(wchar_t* s, size_t n, const scope wchar_t* format, scope const ...);
-    ///
-    int __isoc99_swscanf(const scope wchar_t* s, const scope wchar_t* format, scope ...);
-    ///
-    alias swscanf = __isoc99_swscanf;
-    ///
-    int vfwprintf(FILE* stream, const scope wchar_t* format, va_list arg);
-    ///
-    int __isoc99_vfwscanf(FILE* stream, const scope wchar_t* format, va_list arg);
-    ///
-    alias vfwscanf = __isoc99_vfwscanf;
-    ///
-    int vswprintf(wchar_t* s, size_t n, const scope wchar_t* format, va_list arg);
-    ///
-    int __isoc99_vswscanf(const scope wchar_t* s, const scope wchar_t* format, va_list arg);
-    ///
-    alias vswscanf = __isoc99_vswscanf;
-    ///
-    int vwprintf(const scope wchar_t* format, va_list arg);
-    ///
-    int __isoc99_vwscanf(const scope wchar_t* format, va_list arg);
-    ///
-    alias vwscanf = __isoc99_vwscanf;
-    ///
-    int wprintf(const scope wchar_t* format, scope const ...);
-    ///
-    int __isoc99_wscanf(const scope wchar_t* format, scope ...);
-    ///
-    alias wscanf = __isoc99_wscanf;
-}
-else
-{
-    ///
-    int fwprintf(FILE* stream, const scope wchar_t* format, scope const ...);
-    ///
-    int fwscanf(FILE* stream, const scope wchar_t* format, scope ...);
-    ///
-    int swprintf(wchar_t* s, size_t n, const scope wchar_t* format, scope const ...);
-    ///
-    int swscanf(const scope wchar_t* s, const scope wchar_t* format, scope ...);
-    ///
-    int vfwprintf(FILE* stream, const scope wchar_t* format, va_list arg);
-    ///
-    int vfwscanf(FILE* stream, const scope wchar_t* format, va_list arg);
-    ///
-    int vswprintf(wchar_t* s, size_t n, const scope wchar_t* format, va_list arg);
-    ///
-    int vswscanf(const scope wchar_t* s, const scope wchar_t* format, va_list arg);
-    ///
-    int vwprintf(const scope wchar_t* format, va_list arg);
-    ///
-    int vwscanf(const scope wchar_t* format, va_list arg);
-    ///
-    int wprintf(const scope wchar_t* format, scope const ...);
-    ///
-    int wscanf(const scope wchar_t* format, scope ...);
-}
+///
+int fwprintf(FILE* stream, const scope wchar_t* format, scope const ...);
+///
+int fwscanf(FILE* stream, const scope wchar_t* format, scope ...);
+///
+int swprintf(wchar_t* s, size_t n, const scope wchar_t* format, scope const ...);
+///
+int swscanf(const scope wchar_t* s, const scope wchar_t* format, scope ...);
+///
+int vfwprintf(FILE* stream, const scope wchar_t* format, va_list arg);
+///
+int vfwscanf(FILE* stream, const scope wchar_t* format, va_list arg);
+///
+int vswprintf(wchar_t* s, size_t n, const scope wchar_t* format, va_list arg);
+///
+int vswscanf(const scope wchar_t* s, const scope wchar_t* format, va_list arg);
+///
+int vwprintf(const scope wchar_t* format, va_list arg);
+///
+int vwscanf(const scope wchar_t* format, va_list arg);
+///
+int wprintf(const scope wchar_t* format, scope const ...);
+///
+int wscanf(const scope wchar_t* format, scope ...);
 
 // No unsafe pointer manipulation.
 @trusted
@@ -294,15 +122,7 @@ alias putwc = fputwc;
     ///
     wint_t ungetwc(wint_t c, FILE* stream);
     ///
-    version (CRuntime_Microsoft)
-    {
-        // MSVC defines this as an inline function.
-        int fwide(FILE* stream, int mode) { return mode; }
-    }
-    else
-    {
-        int    fwide(FILE* stream, int mode);
-    }
+    int    fwide(FILE* stream, int mode);
 }
 
 ///
@@ -366,18 +186,6 @@ pure wchar_t* wmemset(return scope wchar_t* s, wchar_t c, size_t n);
 
 ///
 size_t wcsftime(wchar_t* s, size_t maxsize, const scope wchar_t* format, const scope tm* timeptr);
-
-version (Windows)
-{
-    ///
-    wchar_t* _wasctime(tm*);      // non-standard
-    ///
-    wchar_t* _wctime(time_t*);    // non-standard
-    ///
-    wchar_t* _wstrdate(wchar_t*); // non-standard
-    ///
-    wchar_t* _wstrtime(wchar_t*); // non-standard
-}
 
 // No unsafe pointer manipulation.
 @trusted
