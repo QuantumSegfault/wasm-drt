@@ -21,7 +21,7 @@ package(wasm_drt.wasip2) template Exports(Impl...) {
   alias run_Impl = findWitExportFunc!("wasi:cli/run@0.2.12", "run", run_Sig, Impl);
   /// ditto
   @wasmExport!("wasi:cli/run@0.2.12#run")
-  pragma(mangle, "__wit_export_wasi:cli__run@0.2.12::run")
+  pragma(mangle, "_start")
   private extern(C) uint __export_run() {
     auto _ret = run_Impl();
     uint _resultPart4;

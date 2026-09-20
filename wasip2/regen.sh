@@ -32,3 +32,6 @@ rm -rf source/wasm_drt/wit/
 find source/wasm_drt/wasip2 \
     -type f \
     -exec sed -i 's/wasm_drt\.wasip2\.common/wasm_drt\.wasip2\.wit/g; s/wasm_drt\.wasip2\.wasi/wasm_drt\.wasip2/g;' {} \+
+
+# Remangle the run wrapper as `_start` to appease wasm-ld
+sed -i 's/pragma(mangle, "__wit_export_wasi:cli__run@0\.2\.12::run")/pragma(mangle, "_start")/g;' source/wasm_drt/wasip2/run/exports.d
