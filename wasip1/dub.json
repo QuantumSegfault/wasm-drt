@@ -8,6 +8,6 @@
   "toolchainRequirements": {
     "dmd": "no",
     "gdc": "no",
-    "ldc": "yes"
+    "ldc": ">=1.43.0"
   }
 }
