@@ -37,6 +37,7 @@ public import wasm_drt.wasip2.random.insecure_seed.imports;
 
 private alias AliasSeq(T...) = T;
 template Exports(Impl...) {
+  package (wasm_drt.wasip2) void __wit_bindgen_component_type_force_link() pure @nogc nothrow => .__wit_bindgen_component_type_force_link();
 
   alias FilteredImpl = wasm_drt.wasip2.wit.findWitExports!Impl;
   alias InterfaceExports = AliasSeq!(

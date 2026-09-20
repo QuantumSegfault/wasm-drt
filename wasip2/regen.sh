@@ -25,7 +25,7 @@ wit-bindgen d \
     --root-package=wasm_drt.wasip2 \
     -w exports \
     wit
-mv source/wasm_drt/wit/wasi/cli/* source/wasm_drt/wasip2
+mv source/wasm_drt/wit/wasi/cli/* source/wasm_drt/wasip2/cli
 rm -rf source/wasm_drt/wit/
 
 
@@ -34,4 +34,4 @@ find source/wasm_drt/wasip2 \
     -exec sed -i 's/wasm_drt\.wasip2\.common/wasm_drt\.wasip2\.wit/g; s/wasm_drt\.wasip2\.wasi/wasm_drt\.wasip2/g;' {} \+
 
 # Remangle the run wrapper as `_start` to appease wasm-ld
-sed -i 's/pragma(mangle, "__wit_export_wasi:cli__run@0\.2\.12::run")/pragma(mangle, "_start")/g;' source/wasm_drt/wasip2/run/exports.d
+sed -i 's/pragma(mangle, "__wit_export_wasi:cli__run@0\.2\.12::run")/pragma(mangle, "_start")/g;' source/wasm_drt/wasip2/cli/run/exports.d
