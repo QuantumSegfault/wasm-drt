@@ -49,16 +49,3 @@ extern (C)
         }
     }
 }
-
-version (LDC)
-    public import rt.deh_win64_posix;
-else version (GNU)
-    public import gcc.deh;
-else version (Win32)
-    public import rt.deh_win32;
-else version (Win64)
-    public import rt.deh_win64_posix;
-else version (Posix)
-    public import rt.deh_win64_posix;
-else
-    static assert (0, "Unsupported architecture");
