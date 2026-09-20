@@ -231,3 +231,8 @@ world command {
   @since(version = 0.2.0)
   export run;
 }
+
+world exports { 
+    @since(version = 0.2.0)
+    export run;
+}
