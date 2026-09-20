@@ -1,0 +1,13 @@
+{
+  "description": "Bindings to WASIp2.",
+  "license": "BSL-1.0",
+  "authors": ["Demetrius Kanios"],
+  "copyright": "Copyright © 2026, Demetrius Kanios",
+  "name": "wasip2",
+  "targetType": "sourceLibrary",
+  "toolchainRequirements": {
+    "dmd": "no",
+    "gdc": "no",
+    "ldc": ">=1.43.0"
+  }
+}
