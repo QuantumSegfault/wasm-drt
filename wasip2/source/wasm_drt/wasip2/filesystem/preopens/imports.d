@@ -20,7 +20,7 @@ alias Descriptor = wasm_drt.wasip2.filesystem.types.imports.Descriptor;
 /++
 
 +/
-WitList!(Tuple!(Descriptor, WitString)) getDirectories() @trusted nothrow {
+WitList!(Tuple!(Descriptor, WitString)) getDirectories() @trusted @nogc nothrow {
   align(size_t.sizeof) void[(2*size_t.sizeof)] _retArea = void;
   __import_getDirectories(_retArea.ptr);
   auto _listSrcPtr5 = *(cast(void**)(_retArea.ptr + 0));
@@ -47,4 +47,4 @@ WitList!(Tuple!(Descriptor, WitString)) getDirectories() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:filesystem/preopens@0.2.12", "get-directories")
 pragma(mangle, "__wit_import_wasi:filesystem__preopens@0.2.12__get_directories")
-private extern(C) void __import_getDirectories(void*) nothrow;
+private extern(C) void __import_getDirectories(void*) @nogc nothrow;

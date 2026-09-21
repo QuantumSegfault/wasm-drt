@@ -26,7 +26,7 @@ alias UdpSocket = wasm_drt.wasip2.sockets.udp.imports.UdpSocket;
 /++
 
 +/
-Result!(UdpSocket, ErrorCode) createUdpSocket(IpAddressFamily addressFamily) @trusted nothrow {
+Result!(UdpSocket, ErrorCode) createUdpSocket(IpAddressFamily addressFamily) @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_createUdpSocket(cast(uint)(addressFamily), _retArea.ptr);
   Result!(UdpSocket, ErrorCode) _result3 = void;
@@ -45,4 +45,4 @@ Result!(UdpSocket, ErrorCode) createUdpSocket(IpAddressFamily addressFamily) @tr
 /// ditto
 @wasmImport!("wasi:sockets/udp-create-socket@0.2.12", "create-udp-socket")
 pragma(mangle, "__wit_import_wasi:sockets__udp_create_socket@0.2.12__create_udp_socket")
-private extern(C) void __import_createUdpSocket(uint, void*) nothrow;
+private extern(C) void __import_createUdpSocket(uint, void*) @nogc nothrow;

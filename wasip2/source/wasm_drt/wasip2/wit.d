@@ -60,7 +60,7 @@ mixin template WitFlags(T) if (__traits(isUnsigned, T)) {
 
     T bits;
 
-    @safe nothrow @nogc pure pragma(inline, true):
+    @safe @nogc pure nothrow pragma(inline, true):
 
     static typeof(this) opIndex(size_t i)
     in(i < T.sizeof*8) => F(cast(T)(1 << i));
@@ -191,7 +191,7 @@ public:
         else return true;
     }
 
-    size_t toHash() const @safe pure nothrow
+    size_t toHash() const @safe pure @nogc nothrow
     {
         if (isSome) return this.unwrap.hashOf(true.hashOf);
         return false.hashOf;
@@ -294,7 +294,7 @@ public:
         else return true;
     }
 
-    size_t toHash() const @safe pure nothrow
+    size_t toHash() const @safe pure @nogc nothrow
     {
         if (isErr) {
             static if (!is(E == void)) return this.unwrapErr.hashOf(true.hashOf);

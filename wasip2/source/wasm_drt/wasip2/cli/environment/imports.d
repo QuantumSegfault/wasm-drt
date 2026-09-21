@@ -21,7 +21,7 @@ Morally, these are a value import, but until value imports are available
 in the component model, this import function should return the same
 values each time it is called.
 +/
-WitList!(Tuple!(WitString, WitString)) getEnvironment() @trusted nothrow {
+WitList!(Tuple!(WitString, WitString)) getEnvironment() @trusted @nogc nothrow {
   align(size_t.sizeof) void[(2*size_t.sizeof)] _retArea = void;
   __import_getEnvironment(_retArea.ptr);
   auto _listSrcPtr6 = *(cast(void**)(_retArea.ptr + 0));
@@ -50,12 +50,12 @@ WitList!(Tuple!(WitString, WitString)) getEnvironment() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/environment@0.2.12", "get-environment")
 pragma(mangle, "__wit_import_wasi:cli__environment@0.2.12__get_environment")
-private extern(C) void __import_getEnvironment(void*) nothrow;
+private extern(C) void __import_getEnvironment(void*) @nogc nothrow;
 
 /++
 Get the POSIX-style arguments to the program.
 +/
-WitList!(WitString) getArguments() @trusted nothrow {
+WitList!(WitString) getArguments() @trusted @nogc nothrow {
   align(size_t.sizeof) void[(2*size_t.sizeof)] _retArea = void;
   __import_getArguments(_retArea.ptr);
   auto _listSrcPtr3 = *(cast(void**)(_retArea.ptr + 0));
@@ -77,13 +77,13 @@ WitList!(WitString) getArguments() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/environment@0.2.12", "get-arguments")
 pragma(mangle, "__wit_import_wasi:cli__environment@0.2.12__get_arguments")
-private extern(C) void __import_getArguments(void*) nothrow;
+private extern(C) void __import_getArguments(void*) @nogc nothrow;
 
 /++
 Return a path that programs should use as their initial current working
 directory, interpreting `.` as shorthand for this.
 +/
-Option!(WitString) initialCwd() @trusted nothrow {
+Option!(WitString) initialCwd() @trusted @nogc nothrow {
   align(size_t.sizeof) void[(3*size_t.sizeof)] _retArea = void;
   __import_initialCwd(_retArea.ptr);
   Option!(WitString) _option4 = void;
@@ -103,4 +103,4 @@ Option!(WitString) initialCwd() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/environment@0.2.12", "initial-cwd")
 pragma(mangle, "__wit_import_wasi:cli__environment@0.2.12__initial_cwd")
-private extern(C) void __import_initialCwd(void*) nothrow;
+private extern(C) void __import_initialCwd(void*) @nogc nothrow;

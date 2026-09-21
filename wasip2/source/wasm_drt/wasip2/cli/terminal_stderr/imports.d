@@ -22,7 +22,7 @@ alias TerminalOutput = wasm_drt.wasip2.cli.terminal_output.imports.TerminalOutpu
 If stderr is connected to a terminal, return a `terminal-output` handle
 allowing further interaction with it.
 +/
-Option!(TerminalOutput) getTerminalStderr() @trusted nothrow {
+Option!(TerminalOutput) getTerminalStderr() @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_getTerminalStderr(_retArea.ptr);
   Option!(TerminalOutput) _option3 = void;
@@ -40,4 +40,4 @@ Option!(TerminalOutput) getTerminalStderr() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/terminal-stderr@0.2.12", "get-terminal-stderr")
 pragma(mangle, "__wit_import_wasi:cli__terminal_stderr@0.2.12__get_terminal_stderr")
-private extern(C) void __import_getTerminalStderr(void*) nothrow;
+private extern(C) void __import_getTerminalStderr(void*) @nogc nothrow;

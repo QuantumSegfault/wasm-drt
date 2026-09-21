@@ -124,7 +124,7 @@ struct InputStream {
     /++
 
     +/
-    Result!(WitList!(ubyte), StreamError) read(ulong len) @trusted nothrow {
+    Result!(WitList!(ubyte), StreamError) read(ulong len) @trusted @nogc nothrow {
       align(size_t.sizeof) void[(3*size_t.sizeof)] _retArea = void;
       __import_read(this.__handle, len, _retArea.ptr);
       Result!(WitList!(ubyte), StreamError) _result10 = void;
@@ -160,12 +160,12 @@ struct InputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]input-stream.read")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:input_stream.read")
-    static private extern(C) void __import_read(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_read(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(WitList!(ubyte), StreamError) blockingRead(ulong len) @trusted nothrow {
+    Result!(WitList!(ubyte), StreamError) blockingRead(ulong len) @trusted @nogc nothrow {
       align(size_t.sizeof) void[(3*size_t.sizeof)] _retArea = void;
       __import_blockingRead(this.__handle, len, _retArea.ptr);
       Result!(WitList!(ubyte), StreamError) _result10 = void;
@@ -201,12 +201,12 @@ struct InputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]input-stream.blocking-read")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:input_stream.blocking_read")
-    static private extern(C) void __import_blockingRead(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_blockingRead(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, StreamError) skip(ulong len) @trusted nothrow {
+    Result!(ulong, StreamError) skip(ulong len) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_skip(this.__handle, len, _retArea.ptr);
       Result!(ulong, StreamError) _result8 = void;
@@ -239,12 +239,12 @@ struct InputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]input-stream.skip")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:input_stream.skip")
-    static private extern(C) void __import_skip(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_skip(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, StreamError) blockingSkip(ulong len) @trusted nothrow {
+    Result!(ulong, StreamError) blockingSkip(ulong len) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_blockingSkip(this.__handle, len, _retArea.ptr);
       Result!(ulong, StreamError) _result8 = void;
@@ -277,12 +277,12 @@ struct InputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]input-stream.blocking-skip")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:input_stream.blocking_skip")
-    static private extern(C) void __import_blockingSkip(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_blockingSkip(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -290,7 +290,7 @@ struct InputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]input-stream.subscribe")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:input_stream.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
   }
 }
 
@@ -338,7 +338,7 @@ struct OutputStream {
     /++
 
     +/
-    Result!(ulong, StreamError) checkWrite() @trusted nothrow {
+    Result!(ulong, StreamError) checkWrite() @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_checkWrite(this.__handle, _retArea.ptr);
       Result!(ulong, StreamError) _result8 = void;
@@ -371,12 +371,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.check-write")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.check_write")
-    static private extern(C) void __import_checkWrite(uint, void*) nothrow;
+    static private extern(C) void __import_checkWrite(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) write(in WitList!(ubyte) contents) @trusted nothrow {
+    Result!(void, StreamError) write(in WitList!(ubyte) contents) @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_write(this.__handle, cast(void*)(contents.ptr), contents.length, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -409,12 +409,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.write")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.write")
-    static private extern(C) void __import_write(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_write(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) blockingWriteAndFlush(in WitList!(ubyte) contents) @trusted nothrow {
+    Result!(void, StreamError) blockingWriteAndFlush(in WitList!(ubyte) contents) @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_blockingWriteAndFlush(this.__handle, cast(void*)(contents.ptr), contents.length, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -447,12 +447,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.blocking-write-and-flush")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.blocking_write_and_flush")
-    static private extern(C) void __import_blockingWriteAndFlush(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_blockingWriteAndFlush(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) flush() @trusted nothrow {
+    Result!(void, StreamError) flush() @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_flush(this.__handle, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -485,12 +485,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.flush")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.flush")
-    static private extern(C) void __import_flush(uint, void*) nothrow;
+    static private extern(C) void __import_flush(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) blockingFlush() @trusted nothrow {
+    Result!(void, StreamError) blockingFlush() @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_blockingFlush(this.__handle, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -523,12 +523,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.blocking-flush")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.blocking_flush")
-    static private extern(C) void __import_blockingFlush(uint, void*) nothrow;
+    static private extern(C) void __import_blockingFlush(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -536,12 +536,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.subscribe")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) writeZeroes(ulong len) @trusted nothrow {
+    Result!(void, StreamError) writeZeroes(ulong len) @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_writeZeroes(this.__handle, len, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -574,12 +574,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.write-zeroes")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.write_zeroes")
-    static private extern(C) void __import_writeZeroes(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_writeZeroes(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, StreamError) blockingWriteZeroesAndFlush(ulong len) @trusted nothrow {
+    Result!(void, StreamError) blockingWriteZeroesAndFlush(ulong len) @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       __import_blockingWriteZeroesAndFlush(this.__handle, len, _retArea.ptr);
       Result!(void, StreamError) _result8 = void;
@@ -612,12 +612,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.blocking-write-zeroes-and-flush")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.blocking_write_zeroes_and_flush")
-    static private extern(C) void __import_blockingWriteZeroesAndFlush(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_blockingWriteZeroesAndFlush(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, StreamError) splice(InputStream.Borrow src, ulong len) @trusted nothrow {
+    Result!(ulong, StreamError) splice(InputStream.Borrow src, ulong len) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_splice(this.__handle, src.__handle, len, _retArea.ptr);
       Result!(ulong, StreamError) _result8 = void;
@@ -650,12 +650,12 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.splice")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.splice")
-    static private extern(C) void __import_splice(uint, uint, ulong, void*) nothrow;
+    static private extern(C) void __import_splice(uint, uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, StreamError) blockingSplice(InputStream.Borrow src, ulong len) @trusted nothrow {
+    Result!(ulong, StreamError) blockingSplice(InputStream.Borrow src, ulong len) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_blockingSplice(this.__handle, src.__handle, len, _retArea.ptr);
       Result!(ulong, StreamError) _result8 = void;
@@ -688,6 +688,6 @@ struct OutputStream {
     /// ditto
     @wasmImport!("wasi:io/streams@0.2.12", "[method]output-stream.blocking-splice")
     pragma(mangle, "__wit_import_wasi:io__streams@0.2.12__:method:output_stream.blocking_splice")
-    static private extern(C) void __import_blockingSplice(uint, uint, ulong, void*) nothrow;
+    static private extern(C) void __import_blockingSplice(uint, uint, ulong, void*) @nogc nothrow;
   }
 }

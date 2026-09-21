@@ -22,7 +22,7 @@ alias TerminalOutput = wasm_drt.wasip2.cli.terminal_output.imports.TerminalOutpu
 If stdout is connected to a terminal, return a `terminal-output` handle
 allowing further interaction with it.
 +/
-Option!(TerminalOutput) getTerminalStdout() @trusted nothrow {
+Option!(TerminalOutput) getTerminalStdout() @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_getTerminalStdout(_retArea.ptr);
   Option!(TerminalOutput) _option3 = void;
@@ -40,4 +40,4 @@ Option!(TerminalOutput) getTerminalStdout() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/terminal-stdout@0.2.12", "get-terminal-stdout")
 pragma(mangle, "__wit_import_wasi:cli__terminal_stdout@0.2.12__get_terminal_stdout")
-private extern(C) void __import_getTerminalStdout(void*) nothrow;
+private extern(C) void __import_getTerminalStdout(void*) @nogc nothrow;

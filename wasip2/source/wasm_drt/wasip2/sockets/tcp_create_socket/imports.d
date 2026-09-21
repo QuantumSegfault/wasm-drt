@@ -26,7 +26,7 @@ alias TcpSocket = wasm_drt.wasip2.sockets.tcp.imports.TcpSocket;
 /++
 
 +/
-Result!(TcpSocket, ErrorCode) createTcpSocket(IpAddressFamily addressFamily) @trusted nothrow {
+Result!(TcpSocket, ErrorCode) createTcpSocket(IpAddressFamily addressFamily) @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_createTcpSocket(cast(uint)(addressFamily), _retArea.ptr);
   Result!(TcpSocket, ErrorCode) _result3 = void;
@@ -45,4 +45,4 @@ Result!(TcpSocket, ErrorCode) createTcpSocket(IpAddressFamily addressFamily) @tr
 /// ditto
 @wasmImport!("wasi:sockets/tcp-create-socket@0.2.12", "create-tcp-socket")
 pragma(mangle, "__wit_import_wasi:sockets__tcp_create_socket@0.2.12__create_tcp_socket")
-private extern(C) void __import_createTcpSocket(uint, void*) nothrow;
+private extern(C) void __import_createTcpSocket(uint, void*) @nogc nothrow;

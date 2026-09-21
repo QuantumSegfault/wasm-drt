@@ -63,7 +63,7 @@ struct Network {
 /++
 
 +/
-Option!(ErrorCode) networkErrorCode(Error_.Borrow err) @trusted nothrow {
+Option!(ErrorCode) networkErrorCode(Error_.Borrow err) @trusted @nogc nothrow {
   align(1) void[2] _retArea = void;
   __import_networkErrorCode(err.__handle, _retArea.ptr);
   Option!(ErrorCode) _option2 = void;
@@ -80,4 +80,4 @@ Option!(ErrorCode) networkErrorCode(Error_.Borrow err) @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:sockets/network@0.2.12", "network-error-code")
 pragma(mangle, "__wit_import_wasi:sockets__network@0.2.12__network_error_code")
-private extern(C) void __import_networkErrorCode(uint, void*) nothrow;
+private extern(C) void __import_networkErrorCode(uint, void*) @nogc nothrow;

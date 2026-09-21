@@ -31,7 +31,12 @@ rm -rf source/wasm_drt/wit/
 
 find source/wasm_drt/wasip2 \
     -type f \
-    -exec sed -i 's/wasm_drt\.wasip2\.common/wasm_drt\.wasip2\.wit/g; s/wasm_drt\.wasip2\.wasi/wasm_drt\.wasip2/g;' {} \+
+    -exec sed -i 's/wasm_drt\.wasip2\.common/wasm_drt\.wasip2\.wit/g; s/wasm_drt\.wasip2\.wasi/wasm_drt\.wasip2/g' {} \+
+
+# Evil hack to apply @nogc to everything, under the assumption WASI will never cause re-entry
+find source/wasm_drt/wasip2 \
+    -type f \
+    -exec sed -i 's/nothrow/@nogc nothrow/g; s/@nogc @nogc/@nogc/g; s/@safe @nogc pure @nogc nothrow/@safe @nogc pure nothrow/g; s/@safe @nogc nothrow @nogc pure/@safe @nogc pure nothrow/g' {} \+
 
 # Remangle the run wrapper as `_start` to appease wasm-ld
-sed -i 's/pragma(mangle, "__wit_export_wasi:cli__run@0\.2\.12::run")/pragma(mangle, "_start")/g;' source/wasm_drt/wasip2/cli/run/exports.d
+gsed -i 's/pragma(mangle, "__wit_export_wasi:cli__run@0\.2\.12::run")/pragma(mangle, "_start")/g;' source/wasm_drt/wasip2/cli/run/exports.d

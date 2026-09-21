@@ -20,7 +20,7 @@ alias InputStream = wasm_drt.wasip2.io.streams.imports.InputStream;
 /++
 
 +/
-InputStream getStdin() @trusted nothrow {
+InputStream getStdin() @trusted @nogc nothrow {
   auto _ret = __import_getStdin();
   auto _handle0 = InputStream(_ret);
   return _handle0;
@@ -28,4 +28,4 @@ InputStream getStdin() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/stdin@0.2.12", "get-stdin")
 pragma(mangle, "__wit_import_wasi:cli__stdin@0.2.12__get_stdin")
-private extern(C) uint __import_getStdin() nothrow;
+private extern(C) uint __import_getStdin() @nogc nothrow;

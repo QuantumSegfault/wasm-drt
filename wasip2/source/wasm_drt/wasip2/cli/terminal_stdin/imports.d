@@ -22,7 +22,7 @@ alias TerminalInput = wasm_drt.wasip2.cli.terminal_input.imports.TerminalInput;
 If stdin is connected to a terminal, return a `terminal-input` handle
 allowing further interaction with it.
 +/
-Option!(TerminalInput) getTerminalStdin() @trusted nothrow {
+Option!(TerminalInput) getTerminalStdin() @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_getTerminalStdin(_retArea.ptr);
   Option!(TerminalInput) _option3 = void;
@@ -40,4 +40,4 @@ Option!(TerminalInput) getTerminalStdin() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/terminal-stdin@0.2.12", "get-terminal-stdin")
 pragma(mangle, "__wit_import_wasi:cli__terminal_stdin@0.2.12__get_terminal_stdin")
-private extern(C) void __import_getTerminalStdin(void*) nothrow;
+private extern(C) void __import_getTerminalStdin(void*) @nogc nothrow;

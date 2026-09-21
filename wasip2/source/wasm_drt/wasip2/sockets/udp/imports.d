@@ -67,7 +67,7 @@ struct UdpSocket {
     /++
 
     +/
-    Result!(void, ErrorCode) startBind(Network.Borrow network, in IpSocketAddress localAddress) @trusted nothrow {
+    Result!(void, ErrorCode) startBind(Network.Borrow network, in IpSocketAddress localAddress) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       uint _variantPart4 = void;
       uint _variantPart5 = void;
@@ -132,12 +132,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.start-bind")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.start_bind")
-    static private extern(C) void __import_startBind(uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, void*) nothrow;
+    static private extern(C) void __import_startBind(uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) finishBind() @trusted nothrow {
+    Result!(void, ErrorCode) finishBind() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_finishBind(this.__handle, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -155,12 +155,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.finish-bind")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.finish_bind")
-    static private extern(C) void __import_finishBind(uint, void*) nothrow;
+    static private extern(C) void __import_finishBind(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(Tuple!(IncomingDatagramStream, OutgoingDatagramStream), ErrorCode) stream(in Option!(IpSocketAddress) remoteAddress) @trusted nothrow {
+    Result!(Tuple!(IncomingDatagramStream, OutgoingDatagramStream), ErrorCode) stream(in Option!(IpSocketAddress) remoteAddress) @trusted @nogc nothrow {
       align(4) void[12] _retArea = void;
       uint _option21 = void;
       uint _option22 = void;
@@ -274,12 +274,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.stream")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.stream")
-    static private extern(C) void __import_stream(uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, void*) nothrow;
+    static private extern(C) void __import_stream(uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(IpSocketAddress, ErrorCode) localAddress() @trusted nothrow {
+    Result!(IpSocketAddress, ErrorCode) localAddress() @trusted @nogc nothrow {
       align(4) void[36] _retArea = void;
       __import_localAddress(this.__handle, _retArea.ptr);
       Result!(IpSocketAddress, ErrorCode) _result11 = void;
@@ -338,12 +338,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.local-address")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.local_address")
-    static private extern(C) void __import_localAddress(uint, void*) nothrow;
+    static private extern(C) void __import_localAddress(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(IpSocketAddress, ErrorCode) remoteAddress() @trusted nothrow {
+    Result!(IpSocketAddress, ErrorCode) remoteAddress() @trusted @nogc nothrow {
       align(4) void[36] _retArea = void;
       __import_remoteAddress(this.__handle, _retArea.ptr);
       Result!(IpSocketAddress, ErrorCode) _result11 = void;
@@ -402,24 +402,24 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.remote-address")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.remote_address")
-    static private extern(C) void __import_remoteAddress(uint, void*) nothrow;
+    static private extern(C) void __import_remoteAddress(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    IpAddressFamily addressFamily() @trusted nothrow {
+    IpAddressFamily addressFamily() @trusted @nogc nothrow {
       auto _ret = __import_addressFamily(this.__handle);
       return cast(wasm_drt.wasip2.sockets.network.imports.IpAddressFamily)(_ret);
     }
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.address-family")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.address_family")
-    static private extern(C) uint __import_addressFamily(uint) nothrow;
+    static private extern(C) uint __import_addressFamily(uint) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ubyte, ErrorCode) unicastHopLimit() @trusted nothrow {
+    Result!(ubyte, ErrorCode) unicastHopLimit() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_unicastHopLimit(this.__handle, _retArea.ptr);
       Result!(ubyte, ErrorCode) _result2 = void;
@@ -437,12 +437,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.unicast-hop-limit")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.unicast_hop_limit")
-    static private extern(C) void __import_unicastHopLimit(uint, void*) nothrow;
+    static private extern(C) void __import_unicastHopLimit(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setUnicastHopLimit(ubyte value) @trusted nothrow {
+    Result!(void, ErrorCode) setUnicastHopLimit(ubyte value) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_setUnicastHopLimit(this.__handle, cast(uint)(value), _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -460,12 +460,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.set-unicast-hop-limit")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.set_unicast_hop_limit")
-    static private extern(C) void __import_setUnicastHopLimit(uint, uint, void*) nothrow;
+    static private extern(C) void __import_setUnicastHopLimit(uint, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, ErrorCode) receiveBufferSize() @trusted nothrow {
+    Result!(ulong, ErrorCode) receiveBufferSize() @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_receiveBufferSize(this.__handle, _retArea.ptr);
       Result!(ulong, ErrorCode) _result2 = void;
@@ -483,12 +483,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.receive-buffer-size")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.receive_buffer_size")
-    static private extern(C) void __import_receiveBufferSize(uint, void*) nothrow;
+    static private extern(C) void __import_receiveBufferSize(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setReceiveBufferSize(ulong value) @trusted nothrow {
+    Result!(void, ErrorCode) setReceiveBufferSize(ulong value) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_setReceiveBufferSize(this.__handle, value, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -506,12 +506,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.set-receive-buffer-size")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.set_receive_buffer_size")
-    static private extern(C) void __import_setReceiveBufferSize(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_setReceiveBufferSize(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, ErrorCode) sendBufferSize() @trusted nothrow {
+    Result!(ulong, ErrorCode) sendBufferSize() @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_sendBufferSize(this.__handle, _retArea.ptr);
       Result!(ulong, ErrorCode) _result2 = void;
@@ -529,12 +529,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.send-buffer-size")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.send_buffer_size")
-    static private extern(C) void __import_sendBufferSize(uint, void*) nothrow;
+    static private extern(C) void __import_sendBufferSize(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setSendBufferSize(ulong value) @trusted nothrow {
+    Result!(void, ErrorCode) setSendBufferSize(ulong value) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_setSendBufferSize(this.__handle, value, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -552,12 +552,12 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.set-send-buffer-size")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.set_send_buffer_size")
-    static private extern(C) void __import_setSendBufferSize(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_setSendBufferSize(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -565,7 +565,7 @@ struct UdpSocket {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]udp-socket.subscribe")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:udp_socket.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
   }
 }
 
@@ -613,7 +613,7 @@ struct IncomingDatagramStream {
     /++
 
     +/
-    Result!(WitList!(IncomingDatagram), ErrorCode) receive(ulong maxResults) @trusted nothrow {
+    Result!(WitList!(IncomingDatagram), ErrorCode) receive(ulong maxResults) @trusted @nogc nothrow {
       align(size_t.sizeof) void[(3*size_t.sizeof)] _retArea = void;
       __import_receive(this.__handle, maxResults, _retArea.ptr);
       Result!(WitList!(IncomingDatagram), ErrorCode) _result17 = void;
@@ -689,12 +689,12 @@ struct IncomingDatagramStream {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]incoming-datagram-stream.receive")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:incoming_datagram_stream.receive")
-    static private extern(C) void __import_receive(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_receive(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -702,7 +702,7 @@ struct IncomingDatagramStream {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]incoming-datagram-stream.subscribe")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:incoming_datagram_stream.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
   }
 }
 
@@ -750,7 +750,7 @@ struct OutgoingDatagramStream {
     /++
 
     +/
-    Result!(ulong, ErrorCode) checkSend() @trusted nothrow {
+    Result!(ulong, ErrorCode) checkSend() @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_checkSend(this.__handle, _retArea.ptr);
       Result!(ulong, ErrorCode) _result2 = void;
@@ -768,12 +768,12 @@ struct OutgoingDatagramStream {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]outgoing-datagram-stream.check-send")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:outgoing_datagram_stream.check_send")
-    static private extern(C) void __import_checkSend(uint, void*) nothrow;
+    static private extern(C) void __import_checkSend(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(ulong, ErrorCode) send(in WitList!(OutgoingDatagram) datagrams) @trusted nothrow {
+    Result!(ulong, ErrorCode) send(in WitList!(OutgoingDatagram) datagrams) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       wasm_drt.wasip2.wit.DeallocateBuffer deallocate;
       auto _listSrc10 = datagrams;
@@ -838,12 +838,12 @@ struct OutgoingDatagramStream {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]outgoing-datagram-stream.send")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:outgoing_datagram_stream.send")
-    static private extern(C) void __import_send(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_send(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -851,6 +851,6 @@ struct OutgoingDatagramStream {
     /// ditto
     @wasmImport!("wasi:sockets/udp@0.2.12", "[method]outgoing-datagram-stream.subscribe")
     pragma(mangle, "__wit_import_wasi:sockets__udp@0.2.12__:method:outgoing_datagram_stream.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
   }
 }

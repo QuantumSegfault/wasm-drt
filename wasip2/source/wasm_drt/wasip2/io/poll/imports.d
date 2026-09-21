@@ -55,32 +55,32 @@ struct Pollable {
     /++
 
     +/
-    bool ready() @trusted nothrow {
+    bool ready() @trusted @nogc nothrow {
       auto _ret = __import_ready(this.__handle);
       return (_ret) != 0;
     }
     /// ditto
     @wasmImport!("wasi:io/poll@0.2.12", "[method]pollable.ready")
     pragma(mangle, "__wit_import_wasi:io__poll@0.2.12__:method:pollable.ready")
-    static private extern(C) uint __import_ready(uint) nothrow;
+    static private extern(C) uint __import_ready(uint) @nogc nothrow;
 
     /++
 
     +/
-    void block() @trusted nothrow {
+    void block() @trusted @nogc nothrow {
       __import_block(this.__handle);
     }
     /// ditto
     @wasmImport!("wasi:io/poll@0.2.12", "[method]pollable.block")
     pragma(mangle, "__wit_import_wasi:io__poll@0.2.12__:method:pollable.block")
-    static private extern(C) void __import_block(uint) nothrow;
+    static private extern(C) void __import_block(uint) @nogc nothrow;
   }
 }
 
 /++
 
 +/
-WitList!(uint) poll(in WitList!(Pollable.Borrow) in_) @trusted nothrow {
+WitList!(uint) poll(in WitList!(Pollable.Borrow) in_) @trusted @nogc nothrow {
   align(size_t.sizeof) void[(2*size_t.sizeof)] _retArea = void;
   __import_poll(cast(void*)(in_.ptr), in_.length, _retArea.ptr);
   auto _len0 = *(cast(size_t*)(_retArea.ptr + size_t.sizeof));
@@ -92,4 +92,4 @@ WitList!(uint) poll(in WitList!(Pollable.Borrow) in_) @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:io/poll@0.2.12", "poll")
 pragma(mangle, "__wit_import_wasi:io__poll@0.2.12__poll")
-private extern(C) void __import_poll(void*, size_t, void*) nothrow;
+private extern(C) void __import_poll(void*, size_t, void*) @nogc nothrow;

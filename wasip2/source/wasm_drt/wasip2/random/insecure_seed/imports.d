@@ -14,7 +14,7 @@ package (wasm_drt.wasip2) void __wit_bindgen_component_type_force_link() pure @n
 /++
 
 +/
-Tuple!(ulong, ulong) insecureSeed() @trusted nothrow {
+Tuple!(ulong, ulong) insecureSeed() @trusted @nogc nothrow {
   align(8) void[16] _retArea = void;
   __import_insecureSeed(_retArea.ptr);
   auto _tuple0 = Tuple!(ulong, ulong)(
@@ -27,4 +27,4 @@ Tuple!(ulong, ulong) insecureSeed() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:random/insecure-seed@0.2.12", "insecure-seed")
 pragma(mangle, "__wit_import_wasi:random__insecure_seed@0.2.12__insecure_seed")
-private extern(C) void __import_insecureSeed(void*) nothrow;
+private extern(C) void __import_insecureSeed(void*) @nogc nothrow;

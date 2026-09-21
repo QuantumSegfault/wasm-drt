@@ -67,7 +67,7 @@ struct ResolveAddressStream {
     /++
 
     +/
-    Result!(Option!(IpAddress), ErrorCode) resolveNextAddress() @trusted nothrow {
+    Result!(Option!(IpAddress), ErrorCode) resolveNextAddress() @trusted @nogc nothrow {
       align(2) void[22] _retArea = void;
       __import_resolveNextAddress(this.__handle, _retArea.ptr);
       Result!(Option!(IpAddress), ErrorCode) _result12 = void;
@@ -124,12 +124,12 @@ struct ResolveAddressStream {
     /// ditto
     @wasmImport!("wasi:sockets/ip-name-lookup@0.2.12", "[method]resolve-address-stream.resolve-next-address")
     pragma(mangle, "__wit_import_wasi:sockets__ip_name_lookup@0.2.12__:method:resolve_address_stream.resolve_next_address")
-    static private extern(C) void __import_resolveNextAddress(uint, void*) nothrow;
+    static private extern(C) void __import_resolveNextAddress(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Pollable subscribe() @trusted nothrow {
+    Pollable subscribe() @trusted @nogc nothrow {
       auto _ret = __import_subscribe(this.__handle);
       auto _handle0 = Pollable(_ret);
       return _handle0;
@@ -137,14 +137,14 @@ struct ResolveAddressStream {
     /// ditto
     @wasmImport!("wasi:sockets/ip-name-lookup@0.2.12", "[method]resolve-address-stream.subscribe")
     pragma(mangle, "__wit_import_wasi:sockets__ip_name_lookup@0.2.12__:method:resolve_address_stream.subscribe")
-    static private extern(C) uint __import_subscribe(uint) nothrow;
+    static private extern(C) uint __import_subscribe(uint) @nogc nothrow;
   }
 }
 
 /++
 
 +/
-Result!(ResolveAddressStream, ErrorCode) resolveAddresses(Network.Borrow network, in WitString name) @trusted nothrow {
+Result!(ResolveAddressStream, ErrorCode) resolveAddresses(Network.Borrow network, in WitString name) @trusted @nogc nothrow {
   align(4) void[8] _retArea = void;
   __import_resolveAddresses(network.__handle, cast(void*)(name.ptr), name.length, _retArea.ptr);
   Result!(ResolveAddressStream, ErrorCode) _result3 = void;
@@ -163,4 +163,4 @@ Result!(ResolveAddressStream, ErrorCode) resolveAddresses(Network.Borrow network
 /// ditto
 @wasmImport!("wasi:sockets/ip-name-lookup@0.2.12", "resolve-addresses")
 pragma(mangle, "__wit_import_wasi:sockets__ip_name_lookup@0.2.12__resolve_addresses")
-private extern(C) void __import_resolveAddresses(uint, void*, size_t, void*) nothrow;
+private extern(C) void __import_resolveAddresses(uint, void*, size_t, void*) @nogc nothrow;

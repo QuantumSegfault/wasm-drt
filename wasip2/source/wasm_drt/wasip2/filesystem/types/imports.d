@@ -72,7 +72,7 @@ struct Descriptor {
     /++
 
     +/
-    Result!(InputStream, ErrorCode) readViaStream(Filesize offset) @trusted nothrow {
+    Result!(InputStream, ErrorCode) readViaStream(Filesize offset) @trusted @nogc nothrow {
       align(4) void[8] _retArea = void;
       __import_readViaStream(this.__handle, offset, _retArea.ptr);
       Result!(InputStream, ErrorCode) _result3 = void;
@@ -91,12 +91,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.read-via-stream")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.read_via_stream")
-    static private extern(C) void __import_readViaStream(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_readViaStream(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(OutputStream, ErrorCode) writeViaStream(Filesize offset) @trusted nothrow {
+    Result!(OutputStream, ErrorCode) writeViaStream(Filesize offset) @trusted @nogc nothrow {
       align(4) void[8] _retArea = void;
       __import_writeViaStream(this.__handle, offset, _retArea.ptr);
       Result!(OutputStream, ErrorCode) _result3 = void;
@@ -115,12 +115,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.write-via-stream")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.write_via_stream")
-    static private extern(C) void __import_writeViaStream(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_writeViaStream(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(OutputStream, ErrorCode) appendViaStream() @trusted nothrow {
+    Result!(OutputStream, ErrorCode) appendViaStream() @trusted @nogc nothrow {
       align(4) void[8] _retArea = void;
       __import_appendViaStream(this.__handle, _retArea.ptr);
       Result!(OutputStream, ErrorCode) _result3 = void;
@@ -139,12 +139,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.append-via-stream")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.append_via_stream")
-    static private extern(C) void __import_appendViaStream(uint, void*) nothrow;
+    static private extern(C) void __import_appendViaStream(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) advise(Filesize offset, Filesize length, Advice advice) @trusted nothrow {
+    Result!(void, ErrorCode) advise(Filesize offset, Filesize length, Advice advice) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_advise(this.__handle, offset, length, cast(uint)(advice), _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -162,12 +162,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.advise")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.advise")
-    static private extern(C) void __import_advise(uint, ulong, ulong, uint, void*) nothrow;
+    static private extern(C) void __import_advise(uint, ulong, ulong, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) syncData() @trusted nothrow {
+    Result!(void, ErrorCode) syncData() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_syncData(this.__handle, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -185,12 +185,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.sync-data")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.sync_data")
-    static private extern(C) void __import_syncData(uint, void*) nothrow;
+    static private extern(C) void __import_syncData(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(DescriptorFlags, ErrorCode) getFlags() @trusted nothrow {
+    Result!(DescriptorFlags, ErrorCode) getFlags() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_getFlags(this.__handle, _retArea.ptr);
       Result!(DescriptorFlags, ErrorCode) _result2 = void;
@@ -208,12 +208,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.get-flags")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.get_flags")
-    static private extern(C) void __import_getFlags(uint, void*) nothrow;
+    static private extern(C) void __import_getFlags(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(DescriptorType, ErrorCode) getType() @trusted nothrow {
+    Result!(DescriptorType, ErrorCode) getType() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_getType(this.__handle, _retArea.ptr);
       Result!(DescriptorType, ErrorCode) _result2 = void;
@@ -231,12 +231,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.get-type")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.get_type")
-    static private extern(C) void __import_getType(uint, void*) nothrow;
+    static private extern(C) void __import_getType(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setSize(Filesize size) @trusted nothrow {
+    Result!(void, ErrorCode) setSize(Filesize size) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_setSize(this.__handle, size, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -254,12 +254,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.set-size")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.set_size")
-    static private extern(C) void __import_setSize(uint, ulong, void*) nothrow;
+    static private extern(C) void __import_setSize(uint, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setTimes(in NewTimestamp dataAccessTimestamp, in NewTimestamp dataModificationTimestamp) @trusted nothrow {
+    Result!(void, ErrorCode) setTimes(in NewTimestamp dataAccessTimestamp, in NewTimestamp dataModificationTimestamp) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       uint _variantPart6 = void;
       ulong _variantPart7 = void;
@@ -327,12 +327,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.set-times")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.set_times")
-    static private extern(C) void __import_setTimes(uint, uint, ulong, uint, uint, ulong, uint, void*) nothrow;
+    static private extern(C) void __import_setTimes(uint, uint, ulong, uint, uint, ulong, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(Tuple!(WitList!(ubyte), bool), ErrorCode) read(Filesize length, Filesize offset) @trusted nothrow {
+    Result!(Tuple!(WitList!(ubyte), bool), ErrorCode) read(Filesize length, Filesize offset) @trusted @nogc nothrow {
       align(size_t.sizeof) void[(4*size_t.sizeof)] _retArea = void;
       __import_read(this.__handle, length, offset, _retArea.ptr);
       Result!(Tuple!(WitList!(ubyte), bool), ErrorCode) _result5 = void;
@@ -357,12 +357,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.read")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.read")
-    static private extern(C) void __import_read(uint, ulong, ulong, void*) nothrow;
+    static private extern(C) void __import_read(uint, ulong, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(Filesize, ErrorCode) write(in WitList!(ubyte) buffer, Filesize offset) @trusted nothrow {
+    Result!(Filesize, ErrorCode) write(in WitList!(ubyte) buffer, Filesize offset) @trusted @nogc nothrow {
       align(8) void[16] _retArea = void;
       __import_write(this.__handle, cast(void*)(buffer.ptr), buffer.length, offset, _retArea.ptr);
       Result!(Filesize, ErrorCode) _result2 = void;
@@ -380,12 +380,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.write")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.write")
-    static private extern(C) void __import_write(uint, void*, size_t, ulong, void*) nothrow;
+    static private extern(C) void __import_write(uint, void*, size_t, ulong, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(DirectoryEntryStream, ErrorCode) readDirectory() @trusted nothrow {
+    Result!(DirectoryEntryStream, ErrorCode) readDirectory() @trusted @nogc nothrow {
       align(4) void[8] _retArea = void;
       __import_readDirectory(this.__handle, _retArea.ptr);
       Result!(DirectoryEntryStream, ErrorCode) _result3 = void;
@@ -404,12 +404,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.read-directory")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.read_directory")
-    static private extern(C) void __import_readDirectory(uint, void*) nothrow;
+    static private extern(C) void __import_readDirectory(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) sync() @trusted nothrow {
+    Result!(void, ErrorCode) sync() @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_sync(this.__handle, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -427,12 +427,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.sync")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.sync")
-    static private extern(C) void __import_sync(uint, void*) nothrow;
+    static private extern(C) void __import_sync(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) createDirectoryAt(in WitString path) @trusted nothrow {
+    Result!(void, ErrorCode) createDirectoryAt(in WitString path) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_createDirectoryAt(this.__handle, cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -450,12 +450,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.create-directory-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.create_directory_at")
-    static private extern(C) void __import_createDirectoryAt(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_createDirectoryAt(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(DescriptorStat, ErrorCode) stat() @trusted nothrow {
+    Result!(DescriptorStat, ErrorCode) stat() @trusted @nogc nothrow {
       align(8) void[104] _retArea = void;
       __import_stat(this.__handle, _retArea.ptr);
       Result!(DescriptorStat, ErrorCode) _result15 = void;
@@ -517,12 +517,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.stat")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.stat")
-    static private extern(C) void __import_stat(uint, void*) nothrow;
+    static private extern(C) void __import_stat(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(DescriptorStat, ErrorCode) statAt(PathFlags pathFlags, in WitString path) @trusted nothrow {
+    Result!(DescriptorStat, ErrorCode) statAt(PathFlags pathFlags, in WitString path) @trusted @nogc nothrow {
       align(8) void[104] _retArea = void;
       __import_statAt(this.__handle, cast(uint)(pathFlags.bits), cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(DescriptorStat, ErrorCode) _result15 = void;
@@ -584,12 +584,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.stat-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.stat_at")
-    static private extern(C) void __import_statAt(uint, uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_statAt(uint, uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) setTimesAt(PathFlags pathFlags, in WitString path, in NewTimestamp dataAccessTimestamp, in NewTimestamp dataModificationTimestamp) @trusted nothrow {
+    Result!(void, ErrorCode) setTimesAt(PathFlags pathFlags, in WitString path, in NewTimestamp dataAccessTimestamp, in NewTimestamp dataModificationTimestamp) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       uint _variantPart6 = void;
       ulong _variantPart7 = void;
@@ -657,12 +657,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.set-times-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.set_times_at")
-    static private extern(C) void __import_setTimesAt(uint, uint, void*, size_t, uint, ulong, uint, uint, ulong, uint, void*) nothrow;
+    static private extern(C) void __import_setTimesAt(uint, uint, void*, size_t, uint, ulong, uint, uint, ulong, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) linkAt(PathFlags oldPathFlags, in WitString oldPath, Descriptor.Borrow newDescriptor, in WitString newPath) @trusted nothrow {
+    Result!(void, ErrorCode) linkAt(PathFlags oldPathFlags, in WitString oldPath, Descriptor.Borrow newDescriptor, in WitString newPath) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_linkAt(this.__handle, cast(uint)(oldPathFlags.bits), cast(void*)(oldPath.ptr), oldPath.length, newDescriptor.__handle, cast(void*)(newPath.ptr), newPath.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -680,12 +680,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.link-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.link_at")
-    static private extern(C) void __import_linkAt(uint, uint, void*, size_t, uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_linkAt(uint, uint, void*, size_t, uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(Descriptor, ErrorCode) openAt(PathFlags pathFlags, in WitString path, OpenFlags openFlags, DescriptorFlags flags) @trusted nothrow {
+    Result!(Descriptor, ErrorCode) openAt(PathFlags pathFlags, in WitString path, OpenFlags openFlags, DescriptorFlags flags) @trusted @nogc nothrow {
       align(4) void[8] _retArea = void;
       __import_openAt(this.__handle, cast(uint)(pathFlags.bits), cast(void*)(path.ptr), path.length, cast(uint)(openFlags.bits), cast(uint)(flags.bits), _retArea.ptr);
       Result!(Descriptor, ErrorCode) _result3 = void;
@@ -704,12 +704,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.open-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.open_at")
-    static private extern(C) void __import_openAt(uint, uint, void*, size_t, uint, uint, void*) nothrow;
+    static private extern(C) void __import_openAt(uint, uint, void*, size_t, uint, uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(WitString, ErrorCode) readlinkAt(in WitString path) @trusted nothrow {
+    Result!(WitString, ErrorCode) readlinkAt(in WitString path) @trusted @nogc nothrow {
       align(size_t.sizeof) void[(3*size_t.sizeof)] _retArea = void;
       __import_readlinkAt(this.__handle, cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(WitString, ErrorCode) _result4 = void;
@@ -730,12 +730,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.readlink-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.readlink_at")
-    static private extern(C) void __import_readlinkAt(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_readlinkAt(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) removeDirectoryAt(in WitString path) @trusted nothrow {
+    Result!(void, ErrorCode) removeDirectoryAt(in WitString path) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_removeDirectoryAt(this.__handle, cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -753,12 +753,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.remove-directory-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.remove_directory_at")
-    static private extern(C) void __import_removeDirectoryAt(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_removeDirectoryAt(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) renameAt(in WitString oldPath, Descriptor.Borrow newDescriptor, in WitString newPath) @trusted nothrow {
+    Result!(void, ErrorCode) renameAt(in WitString oldPath, Descriptor.Borrow newDescriptor, in WitString newPath) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_renameAt(this.__handle, cast(void*)(oldPath.ptr), oldPath.length, newDescriptor.__handle, cast(void*)(newPath.ptr), newPath.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -776,12 +776,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.rename-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.rename_at")
-    static private extern(C) void __import_renameAt(uint, void*, size_t, uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_renameAt(uint, void*, size_t, uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) symlinkAt(in WitString oldPath, in WitString newPath) @trusted nothrow {
+    Result!(void, ErrorCode) symlinkAt(in WitString oldPath, in WitString newPath) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_symlinkAt(this.__handle, cast(void*)(oldPath.ptr), oldPath.length, cast(void*)(newPath.ptr), newPath.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -799,12 +799,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.symlink-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.symlink_at")
-    static private extern(C) void __import_symlinkAt(uint, void*, size_t, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_symlinkAt(uint, void*, size_t, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(void, ErrorCode) unlinkFileAt(in WitString path) @trusted nothrow {
+    Result!(void, ErrorCode) unlinkFileAt(in WitString path) @trusted @nogc nothrow {
       align(1) void[2] _retArea = void;
       __import_unlinkFileAt(this.__handle, cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(void, ErrorCode) _result2 = void;
@@ -822,24 +822,24 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.unlink-file-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.unlink_file_at")
-    static private extern(C) void __import_unlinkFileAt(uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_unlinkFileAt(uint, void*, size_t, void*) @nogc nothrow;
 
     /++
 
     +/
-    bool isSameObject(Descriptor.Borrow other) @trusted nothrow {
+    bool isSameObject(Descriptor.Borrow other) @trusted @nogc nothrow {
       auto _ret = __import_isSameObject(this.__handle, other.__handle);
       return (_ret) != 0;
     }
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.is-same-object")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.is_same_object")
-    static private extern(C) uint __import_isSameObject(uint, uint) nothrow;
+    static private extern(C) uint __import_isSameObject(uint, uint) @nogc nothrow;
 
     /++
 
     +/
-    Result!(MetadataHashValue, ErrorCode) metadataHash() @trusted nothrow {
+    Result!(MetadataHashValue, ErrorCode) metadataHash() @trusted @nogc nothrow {
       align(8) void[24] _retArea = void;
       __import_metadataHash(this.__handle, _retArea.ptr);
       Result!(MetadataHashValue, ErrorCode) _result3 = void;
@@ -861,12 +861,12 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.metadata-hash")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.metadata_hash")
-    static private extern(C) void __import_metadataHash(uint, void*) nothrow;
+    static private extern(C) void __import_metadataHash(uint, void*) @nogc nothrow;
 
     /++
 
     +/
-    Result!(MetadataHashValue, ErrorCode) metadataHashAt(PathFlags pathFlags, in WitString path) @trusted nothrow {
+    Result!(MetadataHashValue, ErrorCode) metadataHashAt(PathFlags pathFlags, in WitString path) @trusted @nogc nothrow {
       align(8) void[24] _retArea = void;
       __import_metadataHashAt(this.__handle, cast(uint)(pathFlags.bits), cast(void*)(path.ptr), path.length, _retArea.ptr);
       Result!(MetadataHashValue, ErrorCode) _result3 = void;
@@ -888,7 +888,7 @@ struct Descriptor {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]descriptor.metadata-hash-at")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:descriptor.metadata_hash_at")
-    static private extern(C) void __import_metadataHashAt(uint, uint, void*, size_t, void*) nothrow;
+    static private extern(C) void __import_metadataHashAt(uint, uint, void*, size_t, void*) @nogc nothrow;
   }
 }
 
@@ -936,7 +936,7 @@ struct DirectoryEntryStream {
     /++
 
     +/
-    Result!(Option!(DirectoryEntry), ErrorCode) readDirectoryEntry() @trusted nothrow {
+    Result!(Option!(DirectoryEntry), ErrorCode) readDirectoryEntry() @trusted @nogc nothrow {
       align(size_t.sizeof) void[(5*size_t.sizeof)] _retArea = void;
       __import_readDirectoryEntry(this.__handle, _retArea.ptr);
       Result!(Option!(DirectoryEntry), ErrorCode) _result8 = void;
@@ -969,14 +969,14 @@ struct DirectoryEntryStream {
     /// ditto
     @wasmImport!("wasi:filesystem/types@0.2.12", "[method]directory-entry-stream.read-directory-entry")
     pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__:method:directory_entry_stream.read_directory_entry")
-    static private extern(C) void __import_readDirectoryEntry(uint, void*) nothrow;
+    static private extern(C) void __import_readDirectoryEntry(uint, void*) @nogc nothrow;
   }
 }
 
 /++
 
 +/
-Option!(ErrorCode) filesystemErrorCode(Error_.Borrow err) @trusted nothrow {
+Option!(ErrorCode) filesystemErrorCode(Error_.Borrow err) @trusted @nogc nothrow {
   align(1) void[2] _retArea = void;
   __import_filesystemErrorCode(err.__handle, _retArea.ptr);
   Option!(ErrorCode) _option2 = void;
@@ -993,4 +993,4 @@ Option!(ErrorCode) filesystemErrorCode(Error_.Borrow err) @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:filesystem/types@0.2.12", "filesystem-error-code")
 pragma(mangle, "__wit_import_wasi:filesystem__types@0.2.12__filesystem_error_code")
-private extern(C) void __import_filesystemErrorCode(uint, void*) nothrow;
+private extern(C) void __import_filesystemErrorCode(uint, void*) @nogc nothrow;

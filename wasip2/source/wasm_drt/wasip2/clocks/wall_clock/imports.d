@@ -14,7 +14,7 @@ package (wasm_drt.wasip2) void __wit_bindgen_component_type_force_link() pure @n
 /++
 
 +/
-Datetime now() @trusted nothrow {
+Datetime now() @trusted @nogc nothrow {
   align(8) void[16] _retArea = void;
   __import_now(_retArea.ptr);
   Datetime _record0 = {
@@ -27,12 +27,12 @@ Datetime now() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:clocks/wall-clock@0.2.12", "now")
 pragma(mangle, "__wit_import_wasi:clocks__wall_clock@0.2.12__now")
-private extern(C) void __import_now(void*) nothrow;
+private extern(C) void __import_now(void*) @nogc nothrow;
 
 /++
 
 +/
-Datetime resolution() @trusted nothrow {
+Datetime resolution() @trusted @nogc nothrow {
   align(8) void[16] _retArea = void;
   __import_resolution(_retArea.ptr);
   Datetime _record0 = {
@@ -45,4 +45,4 @@ Datetime resolution() @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:clocks/wall-clock@0.2.12", "resolution")
 pragma(mangle, "__wit_import_wasi:clocks__wall_clock@0.2.12__resolution")
-private extern(C) void __import_resolution(void*) nothrow;
+private extern(C) void __import_resolution(void*) @nogc nothrow;

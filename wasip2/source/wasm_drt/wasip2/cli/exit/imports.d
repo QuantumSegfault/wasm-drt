@@ -14,7 +14,7 @@ package (wasm_drt.wasip2) void __wit_bindgen_component_type_force_link() pure @n
 /++
 Exit the current instance and any linked instances.
 +/
-void exit(in Result!(void, void) status) @trusted nothrow {
+void exit(in Result!(void, void) status) @trusted @nogc nothrow {
   uint _resultPart4;
   if (status.isErr) {
     
@@ -28,7 +28,7 @@ void exit(in Result!(void, void) status) @trusted nothrow {
 /// ditto
 @wasmImport!("wasi:cli/exit@0.2.12", "exit")
 pragma(mangle, "__wit_import_wasi:cli__exit@0.2.12__exit")
-private extern(C) void __import_exit(uint) nothrow;
+private extern(C) void __import_exit(uint) @nogc nothrow;
 
 /++
 Exit the current instance and any linked instances, reporting the
@@ -40,10 +40,10 @@ The meaning of the code depends on the context, with 0 usually meaning
 This function does not return; the effect is analogous to a trap, but
 without the connotation that something bad has happened.
 +/
-void exitWithCode(ubyte statusCode) @trusted nothrow {
+void exitWithCode(ubyte statusCode) @trusted @nogc nothrow {
   __import_exitWithCode(cast(uint)(statusCode));
 }
 /// ditto
 @wasmImport!("wasi:cli/exit@0.2.12", "exit-with-code")
 pragma(mangle, "__wit_import_wasi:cli__exit@0.2.12__exit_with_code")
-private extern(C) void __import_exitWithCode(uint) nothrow;
+private extern(C) void __import_exitWithCode(uint) @nogc nothrow;

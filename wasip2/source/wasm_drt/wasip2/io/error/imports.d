@@ -55,7 +55,7 @@ struct Error_ {
     /++
 
     +/
-    WitString toDebugString() @trusted nothrow {
+    WitString toDebugString() @trusted @nogc nothrow {
       align(size_t.sizeof) void[(2*size_t.sizeof)] _retArea = void;
       __import_toDebugString(this.__handle, _retArea.ptr);
       auto _len0 = *(cast(size_t*)(_retArea.ptr + size_t.sizeof));
@@ -67,6 +67,6 @@ struct Error_ {
     /// ditto
     @wasmImport!("wasi:io/error@0.2.12", "[method]error.to-debug-string")
     pragma(mangle, "__wit_import_wasi:io__error@0.2.12__:method:error.to_debug_string")
-    static private extern(C) void __import_toDebugString(uint, void*) nothrow;
+    static private extern(C) void __import_toDebugString(uint, void*) @nogc nothrow;
   }
 }
