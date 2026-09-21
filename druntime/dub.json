@@ -7,6 +7,7 @@
   "targetType": "staticLibrary",
   "sourceFiles": ["src/ldc/eh_asm.o", "src/core/internal/gc/impl/conservative/gc.d"],
   "excludedSourceFiles": ["src/core/internal/gc/impl/**/*.d"],
+  "dependencies": { "wasm-drt:wasip1": "~main", "wasm-drt:wasip2": "~main" },
   "toolchainRequirements": {
     "dmd": "no",
     "gdc": "no",
