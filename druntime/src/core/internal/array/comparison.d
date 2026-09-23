@@ -20,12 +20,6 @@ int __cmp(T)(scope const T[] lhs, scope const T[] rhs) @trusted
         alias U = ushort;
     else static if (is(T == dchar))
         alias U = uint;
-    else static if (is(T == ifloat))
-        alias U = float;
-    else static if (is(T == idouble))
-        alias U = double;
-    else static if (is(T == ireal))
-        alias U = real;
     else
         alias U = T;
 
@@ -61,14 +55,6 @@ int __cmp(T)(scope const T[] lhs, scope const T[] rhs) @trusted
         foreach (const u; 0 .. len)
         {
             auto a = lhs.ptr[u], b = rhs.ptr[u];
-            static if (is(T : creal))
-            {
-                // Use rt.cmath2._Ccmp instead ?
-                // Also: if NaN is present, numbers will appear equal.
-                auto r = (a.re > b.re) - (a.re < b.re);
-                if (!r) r = (a.im > b.im) - (a.im < b.im);
-            }
-            else
             {
                 // This pattern for three-way comparison is better than conditional operators
                 // See e.g. https://godbolt.org/z/3j4vh1

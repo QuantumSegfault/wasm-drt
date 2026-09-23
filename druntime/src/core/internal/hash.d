@@ -235,7 +235,7 @@ if (is(T == S[], S) && !(__traits(isScalar, S) || canBitwiseHash!S)) // excludes
 
 // Indicates if F is a built-in complex number type.
 private F coalesceFloat(F)(const F val)
-if (__traits(isFloating, val) && !is(F == __vector) && !is(F : creal))
+if (__traits(isFloating, val) && !is(F == __vector))
 {
     static if (floatCoalesceZeroes)
         if (val == cast(F) 0)
@@ -272,10 +272,6 @@ size_t hashOf(T)(scope const T val) if (__traits(isScalar, T) && !is(T == __vect
             return val;
         else
             return cast(size_t) (val ^ (val >>> (size_t.sizeof * 8)));
-    }
-    else static if (is(T : creal))
-    {
-        return hashOf(coalesceFloat(val.re), hashOf(coalesceFloat(val.im)));
     }
     else
     {
@@ -342,10 +338,6 @@ size_t hashOf(T)(scope const T val, size_t seed) if (__traits(isScalar, T) && !i
         static foreach (i; 0 .. T.sizeof / size_t.sizeof)
             seed = hashOf(cast(size_t) (val >>> (size_t.sizeof * 8 * i)), seed);
         return seed;
-    }
-    else static if (is(T : creal))
-    {
-        return hashOf(val.re, hashOf(val.im, seed));
     }
     else static if (__traits(isFloating, T))
     {

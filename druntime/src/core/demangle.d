@@ -585,12 +585,6 @@ pure @safe:
         TypeFloat
         TypeDouble
         TypeReal
-        TypeIfloat
-        TypeIdouble
-        TypeIreal
-        TypeCfloat
-        TypeCdouble
-        TypeCreal
         TypeBool
         TypeChar
         TypeWchar
@@ -693,24 +687,6 @@ pure @safe:
     TypeReal:
         e
 
-    TypeIfloat:
-        o
-
-    TypeIdouble:
-        p
-
-    TypeIreal:
-        j
-
-    TypeCfloat:
-        q
-
-    TypeCdouble:
-        r
-
-    TypeCreal:
-        c
-
     TypeBool:
         b
 
@@ -731,22 +707,22 @@ pure @safe:
         static immutable string[23] primitives = [
             "char", // a
             "bool", // b
-            "creal", // c
+            null, // c
             "double", // d
             "real", // e
             "float", // f
             "byte", // g
             "ubyte", // h
             "int", // i
-            "ireal", // j
+            null, // j
             "uint", // k
             "long", // l
             "ulong", // m
             null, // n
-            "ifloat", // o
-            "idouble", // p
-            "cfloat", // q
-            "cdouble", // r
+            null, // o
+            null, // p
+            null, // q
+            null, // r
             "short", // s
             "ushort", // t
             "wchar", // u

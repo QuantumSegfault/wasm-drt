@@ -285,21 +285,7 @@ private string miniFormat(V)(const scope ref V v)
             len = sprintf(&val[0], "%g", v);
         else static if (is(V == real))
             len = sprintf(&val[0], realFmt, cast(LD) v);
-        else static if (is(V == cfloat) || is(V == cdouble))
-            len = sprintf(&val[0], "%g + %gi", v.re, v.im);
-        else static if (is(V == creal))
-            len = sprintf(&val[0], realFmt ~ " + " ~ realFmt ~ 'i', cast(LD) v.re, cast(LD) v.im);
-        else static if (is(V == ifloat) || is(V == idouble))
-            len = sprintf(&val[0], "%gi", v);
-        else // ireal
-        {
-            static assert(is(V == ireal));
-            static if (is(LD == real))
-                alias R = ireal;
-            else
-                alias R = idouble;
-            len = sprintf(&val[0], realFmt ~ 'i', cast(R) v);
-        }
+
         return val.idup[0 .. len];
     }
     // special-handling for void-arrays

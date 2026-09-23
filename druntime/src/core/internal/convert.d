@@ -33,20 +33,16 @@ private ubyte[] ctfe_alloc(size_t n)
 }
 
 @trusted pure nothrow @nogc
-const(ubyte)[] toUbyte(T)(const scope ref T val) if (__traits(isFloating, T) && (is(T : real) || is(T : ireal)))
+const(ubyte)[] toUbyte(T)(const scope ref T val) if (__traits(isFloating, T) && (is(T : real)))
 {
     if (__ctfe)
     {
         static if (floatFormat!T == FloatFormat.Float || floatFormat!T == FloatFormat.Double)
         {
-            static if (is(T : ireal)) // https://issues.dlang.org/show_bug.cgi?id=19932
-                const f = val.im;
-            else
-                alias f = val;
             static if (T.sizeof == uint.sizeof)
-                uint bits = *cast(const uint*) &f;
+                uint bits = *cast(const uint*) &val;
             else static if (T.sizeof == ulong.sizeof)
-                ulong bits = *cast(const ulong*) &f;
+                ulong bits = *cast(const ulong*) &val;
             ubyte[] result = ctfe_alloc(T.sizeof);
             version (BigEndian)
             {
@@ -82,10 +78,7 @@ const(ubyte)[] toUbyte(T)(const scope ref T val) if (__traits(isFloating, T) && 
             ubyte[] buff = ctfe_alloc(T.sizeof);
             enum msbSize = double.sizeof;
 
-            static if (is(T : ireal))
-                double hi = toPrec!double(val.im);
-            else
-                double hi = toPrec!double(val);
+            double hi = toPrec!double(val);
             buff[0 .. msbSize] = toUbyte(hi)[];
 
             if (val is cast(T)0.0 || val is cast(T)-0.0 ||
@@ -99,10 +92,7 @@ const(ubyte)[] toUbyte(T)(const scope ref T val) if (__traits(isFloating, T) && 
             }
             else
             {
-                static if (is(T : ireal))
-                    double low = toPrec!double(val.im - hi);
-                else
-                    double low = toPrec!double(val - hi);
+                double low = toPrec!double(val - hi);
                 buff[msbSize .. $] = toUbyte(low)[];
             }
 
@@ -178,12 +168,6 @@ const(ubyte)[] toUbyte(T)(const scope ref T val) if (__traits(isFloating, T) && 
     {
         return (cast(const(ubyte)*)&val)[0 .. T.sizeof];
     }
-}
-
-@safe pure nothrow @nogc
-private Float parse(bool is_denormalized = false, T:ireal)(T x)
-{
-    return parse(x.im);
 }
 
 @safe pure nothrow @nogc
@@ -614,7 +598,7 @@ private enum FloatFormat
     Quadruple
 }
 
-template floatFormat(T) if (is(T:real) || is(T:ireal))
+template floatFormat(T) if (is(T:real))
 {
     static if (T.mant_dig == 24)
         enum floatFormat = FloatFormat.Float;
@@ -638,7 +622,7 @@ template floatFormat(T) if (is(T:real) || is(T:ireal))
 
 }
 
-package template floatSize(T) if (is(T:real) || is(T:ireal))
+package template floatSize(T) if (is(T:real))
 {
     enum floatSize = FloatTraits!(T).DATASIZE;
 }
