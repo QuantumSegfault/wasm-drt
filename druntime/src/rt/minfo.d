@@ -241,9 +241,58 @@ struct ModuleGroup
         // and also allows avoiding keeping a hash around for module lookups.
         int[][] edges = (cast(int[]*)malloc((int[]).sizeof * _modules.length))[0 .. _modules.length];
         {
-            HashTab!(immutable(ModuleInfo)*, int) modIndexes;
-            foreach (i, m; _modules)
-                modIndexes[m] = cast(int) i;
+            size_t[] modIndexes = (cast(size_t*)malloc(size_t.sizeof * _modules.length))[0 .. _modules.length];
+            scope(exit) .free(modIndexes.ptr);
+
+            foreach (i, ref modIdx; modIndexes)
+            {
+                modIdx = i;
+            }
+
+            // Shell sort the module indices based on the pointers
+            if (modIndexes.length > 1)
+            {
+                // Ciura's shell sort gap sequence
+                static immutable size_t[] gaps = [701, 301, 132, 57, 23, 10, 4, 1];
+                
+                foreach (h; gaps)
+                {
+                    if (h >= modIndexes.length) continue;
+        
+                    foreach(i; h..modIndexes.length)
+                    {
+                        auto tmpIdx = modIndexes[i];
+                        auto tmpVal = _modules[tmpIdx];
+                        auto j = i;
+        
+                        while (j >= h && _modules[modIndexes[j - h]] > tmpVal)
+                        {
+                            modIndexes[j] = modIndexes[j - h];
+                            j -= h;
+                        }
+                        modIndexes[j] = tmpIdx;
+                    }
+                }
+            }
+
+            // Binary search
+            int findModuleIndex(immutable(ModuleInfo)* target) nothrow @nogc
+            {
+                size_t low = 0;
+                size_t high = modIndexes.length;
+                while (low < high)
+                {
+                    size_t mid = low + (high - low) / 2;
+                    auto mPtr = _modules[modIndexes[mid]];
+                    if (mPtr is target)
+                        return cast(int) modIndexes[mid];
+                    if (mPtr < target)
+                        low = mid + 1;
+                    else
+                        high = mid;
+                }
+                return -1;
+            }
 
             auto reachable = cast(size_t*) malloc(flagbytes);
             scope(exit)
@@ -257,14 +306,17 @@ struct ModuleGroup
                 // preallocate enough space to store all the indexes
                 int *edge = cast(int*)malloc(int.sizeof * _modules.length);
                 size_t nEdges = 0;
+
                 foreach (imp; m.importedModules)
                 {
                     if (imp is m) // self-import
                         continue;
-                    if (auto impidx = imp in modIndexes)
+
+                    int impidx = findModuleIndex(imp);
+                    if (impidx != -1)
                     {
-                        if (!bts(reachable, *impidx))
-                            edge[nEdges++] = *impidx;
+                        if (!bts(reachable, impidx))
+                            edge[nEdges++] = impidx;
                     }
                 }
                 if (nEdges > 0)
