@@ -14,7 +14,8 @@ module rt.dmain2;
 import core.atomic;
 import core.internal.parseoptions : rt_parseOption;
 import core.stdc.errno : errno;
-import core.stdc.stdio : fflush, fprintf, fwrite, stderr, stdout;
+import core.internal.printing;
+import core.stdc.stdio : fflush, stderr, stdout;
 import core.stdc.stdlib : alloca, EXIT_FAILURE, EXIT_SUCCESS, free, malloc, realloc;
 import core.stdc.string : strerror;
 import rt.config : rt_cmdline_enabled, rt_configOption;
@@ -557,10 +558,12 @@ private extern (C) int _d_run_main2(char[][] args, size_t totalArgsLength, MainF
                 if (utResult.summarize)
                 {
                     if (utResult.passed == 0)
-                        .fprintf(cast().stderr, "No unittests run\n");
+                        (cast().stderr).writeLine("No unittests run");
                     else
-                        .fprintf(cast().stderr, "%d modules passed unittests\n",
-                                 cast(int)utResult.passed);
+                    {
+                        (cast().stderr).writeSigned(utResult.passed);
+                        (cast().stderr).writeLine(" modules passed unittests");
+                    }
                 }
                 if (utResult.runMain)
                     tryExec({ result = mainFunc(args); });
@@ -569,10 +572,12 @@ private extern (C) int _d_run_main2(char[][] args, size_t totalArgsLength, MainF
             }
             else
             {
-                if (utResult.summarize)
-                    .fprintf(cast().stderr, "%d/%d modules FAILED unittests\n",
-                             cast(int)(utResult.executed - utResult.passed),
-                             cast(int)utResult.executed);
+                if (utResult.summarize) {
+                    (cast().stderr).writeSigned(cast(int)(utResult.executed - utResult.passed));
+                    (cast().stderr).writeChar('/');
+                    (cast().stderr).writeSigned(cast(int)utResult.executed);
+                    (cast().stderr).writeLine(" modules FAILED unittests");
+                }
                 result = EXIT_FAILURE;
             }
             version(Shared) version(CRuntime_Microsoft) version (DigitalMars)
@@ -593,7 +598,15 @@ private extern (C) int _d_run_main2(char[][] args, size_t totalArgsLength, MainF
     // Issue 10344: flush stdout and return nonzero on failure
     if (.fflush(cast().stdout) != 0)
     {
-        .fprintf(cast().stderr, "Failed to flush stdout: %s\n", .strerror(.errno));
+        (cast().stderr).writeStr("Failed to flush stdout: ");
+
+        {
+            import core.stdc.string : strlen;
+
+            auto str = .strerror(.errno);
+            (cast().stderr).writeLine(str[0..strlen(str)]);
+        }
+
         if (result == 0)
         {
             result = EXIT_FAILURE;
@@ -724,7 +737,7 @@ extern (C) void _d_print_throwable(Throwable t)
 
     void sink(in char[] buf) scope nothrow
     {
-        fwrite(buf.ptr, char.sizeof, buf.length, cast()stderr);
+        cast()stderr.writeStr(buf);
     }
     formatThrowable(t, &sink);
 }

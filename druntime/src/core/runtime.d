@@ -632,10 +632,14 @@ extern (C) UnitTestResult runModuleUnitTests()
                 if (moduleName.length && e.file.length > moduleName.length
                     && e.file[0 .. moduleName.length] == moduleName)
                 {
-                    import core.stdc.stdio : printf;
-                    printf("%.*s(%llu): [unittest] %.*s\n",
-                        cast(int) e.file.length, e.file.ptr, cast(ulong) e.line,
-                        cast(int) e.message.length, e.message.ptr);
+                    import core.internal.printing;
+                    import core.stdc.stdio : stdout;
+
+                    (cast()stdout).writeStr(e.file);
+                    (cast()stdout).writeChar('(');
+                    (cast()stdout).writeUnsigned(cast(ulong)e.line);
+                    (cast()stdout).writeStr("): [unittest] ");
+                    (cast()stdout).writeLine(e.message);
 
                     // Exception originates in the same module, don't print
                     // the stack trace.

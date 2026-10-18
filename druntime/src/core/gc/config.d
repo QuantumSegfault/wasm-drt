@@ -8,7 +8,8 @@
 module core.gc.config;
 
 import core.internal.parseoptions;
-import core.stdc.stdio : printf;
+import core.internal.printing;
+import core.stdc.stdio : stdout;
 
 __gshared Config config;
 
@@ -45,31 +46,58 @@ struct Config
 
     void help() @nogc nothrow
     {
-        printf("GC options are specified as white space separated assignments:
-    disable:0|1    - start disabled (%d)
-    fork:0|1       - set fork behaviour (%d)
-    profile:0|1|2  - enable profiling with summary when terminating program (%d)".ptr, disable, fork, profile);
+        stdout.writeLine("GC options are specified as white space separated assignments:");
+        
+        stdout.writeStr("    disable:0|1    - start disabled (");
+        stdout.writeSigned(disable);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    fork:0|1       - set fork behaviour (");
+        stdout.writeSigned(fork);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    profile:0|1|2  - enable profiling with summary when terminating program (");
+        stdout.writeSigned(profile);
+        stdout.writeLine(")");
+        
         auto _initReserve = initReserve.bytes2prettyStruct;
         auto _minPoolSize = minPoolSize.bytes2prettyStruct;
         auto _maxPoolSize = maxPoolSize.bytes2prettyStruct;
         auto _incPoolSize = incPoolSize.bytes2prettyStruct;
-        printf(" - select gc implementation (default = conservative)
-
-    initReserve:N  - initial memory to reserve in MB (%lld%c)
-    minPoolSize:N  - initial and minimum pool size in MB (%lld%c)
-    maxPoolSize:N  - maximum pool size in MB (%lld%c)
-    incPoolSize:N  - pool size increment MB (%lld%c)
-    parallel:N     - number of additional threads for marking (%lld)
-    heapSizeFactor:N - targeted heap size to used memory ratio (%g)
-    cleanup:none|collect|finalize - how to treat live objects when terminating (collect)
-
-    Memory-related values can use B, K, M or G suffixes.
-".ptr,
-               _initReserve.v, _initReserve.u,
-               _minPoolSize.v, _minPoolSize.u,
-               _maxPoolSize.v, _maxPoolSize.u,
-               _incPoolSize.v, _incPoolSize.u,
-               cast(long)parallel, heapSizeFactor);
+        
+        stdout.writeLine(" - select gc implementation (default = conservative)\n");
+        
+        stdout.writeStr("    initReserve:N  - initial memory to reserve in MB (");
+        stdout.writeSigned(_initReserve.v);
+        stdout.writeChar(_initReserve.u);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    minPoolSize:N  - initial and minimum pool size in MB (");
+        stdout.writeSigned(_minPoolSize.v);
+        stdout.writeChar(_minPoolSize.u);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    maxPoolSize:N  - maximum pool size in MB (");
+        stdout.writeSigned(_maxPoolSize.v);
+        stdout.writeChar(_maxPoolSize.u);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    incPoolSize:N  - pool size increment MB (");
+        stdout.writeSigned(_incPoolSize.v);
+        stdout.writeChar(_incPoolSize.u);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    parallel:N     - number of additional threads for marking (");
+        stdout.writeSigned(cast(long)parallel);
+        stdout.writeLine(")");
+        
+        stdout.writeStr("    heapSizeFactor:N - targeted heap size to used memory ratio (");
+        // TODO: detach from libc with custom float parser
+        imported!"core.stdc.stdio".printf("%g", heapSizeFactor);
+        stdout.writeLine(")");
+        
+        stdout.writeLine("    cleanup:none|collect|finalize - how to treat live objects when terminating (collect)\n");
+        stdout.writeLine("    Memory-related values can use B, K, M or G suffixes.");
     }
 
     string errorName() @nogc nothrow { return "GC"; }

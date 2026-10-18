@@ -14,7 +14,8 @@ module rt.dwarfeh;
 //debug = EH_personality;
 
 import core.internal.backtrace.unwind;
-import core.stdc.stdio : fprintf, printf, stderr;
+import core.internal.printing;
+import core.stdc.stdio : stderr;
 import core.stdc.stdlib : abort, calloc, free;
 import rt.dmain2 : _d_print_throwable;
 
@@ -45,7 +46,7 @@ debug (EH_personality)
         va_list args;
         va_start(args, format);
         vfprintf(stdout, format, args);
-        fprintf(stdout, "\n");
+        stdout.writeChar('\n');
         fflush(stdout);
     }
 }
@@ -341,7 +342,7 @@ extern (C) _Unwind_Reason_Code _d_eh_personality_wasm(_Unwind_Exception* excepti
     final switch (result)
     {
         case LsdaResult.notFound:
-            fprintf(cast()stderr, "not found\n");
+            (cast()stderr).writeLine("not found");
             terminate(__LINE__);
             assert(0);
 
@@ -350,7 +351,7 @@ extern (C) _Unwind_Reason_Code _d_eh_personality_wasm(_Unwind_Exception* excepti
             assert(0);
 
         case LsdaResult.corrupt:
-            fprintf(cast()stderr, "LSDA is corrupt\n");
+            (cast()stderr).writeLine("LSDA is corrupt");
             terminate(__LINE__);
             assert(0);
 
@@ -683,7 +684,7 @@ LsdaResult scanLSDA(const(ubyte)* lsda, _Unwind_Ptr ip, _Unwind_Exception_Class 
                 auto h = actionTableLookup(exceptionObject, cast(uint)ActionRecordPtr, pActionTable, tt, TType, exceptionClass, lsda);
                 if (h < 0)
                 {
-                    fprintf(cast()stderr, "negative handler\n");
+                    (cast()stderr).writeLine("negative handler");
                     return false;
                 }
 
@@ -799,7 +800,9 @@ int actionTableLookup(_Unwind_Exception* exceptionObject, uint actionRecordPtr, 
         }
         if (TypeFilter <= 0)                    // should never happen with DMD generated tables
         {
-            fprintf(cast()stderr, "TypeFilter = %d\n", cast(int)TypeFilter);
+            (cast()stderr).writeStr("TypeFilter = ");
+            (cast()stderr).writeSigned(cast(int)TypeFilter);
+            (cast()stderr).writeChar('\n');
             return -1;                          // corrupt
         }
 
@@ -821,7 +824,9 @@ int actionTableLookup(_Unwind_Exception* exceptionObject, uint actionRecordPtr, 
                                     else
                                         goto case DW_EH_PE_udata4;
             default:
-                fprintf(cast()stderr, "TType = x%x\n", TType);
+                (cast()stderr).writeStr("TType = ");
+                (cast()stderr).writeUnsigned!16(TType);
+                (cast()stderr).writeChar('\n');
                 return -1;      // corrupt
         }
         if (!entry)             // the 'catch all' type
@@ -867,6 +872,12 @@ enum LsdaResult
 
 void terminate(uint line) @nogc
 {
-    printf("dwarfeh(%u) fatal error\n", line);
+    import core.internal.printing;
+    import core.stdc.stdio : stdout;
+
+    (cast()stdout).writeStr("dwarfeh(");
+    (cast()stdout).writeUnsigned(line);
+    (cast()stdout).writeLine(") fatal error");
+
     abort();     // unceremoniously exit
 }

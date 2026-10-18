@@ -11,7 +11,8 @@ module core.internal.parseoptions;
 
 import core.internal.traits : externDFunc, hasUDA;
 import core.stdc.ctype : isdigit, isspace;
-import core.stdc.stdio : fprintf, snprintf, sscanf, stderr;
+import core.stdc.stdio : stderr;
+import core.internal.printing;
 import core.vararg;
 
 
@@ -148,10 +149,7 @@ bool optError(const scope char[] msg, const scope char[] name, const(char)[] err
 
     version (CoreUnittest) if (inUnittest) return false;
 
-    fprintf(atomicLoad(stderr), "%.*s %.*s option '%.*s'.\n",
-            cast(int)msg.length, msg.ptr,
-            cast(int)errName.length, errName.ptr,
-            cast(int)name.length, name.ptr);
+    atomicLoad(stderr).writeStrings(msg, " ", errName, " option '", name, "'.\n");
     return false;
 }
 
@@ -311,11 +309,7 @@ bool parseError(const scope char[] exp, const scope char[] opt, const scope char
 
     version (CoreUnittest) if (inUnittest) return false;
 
-    fprintf(atomicLoad(stderr), "Expecting %.*s as argument for %.*s option '%.*s', got '%.*s' instead.\n",
-            cast(int)exp.length, exp.ptr,
-            cast(int)errName.length, errName.ptr,
-            cast(int)opt.length, opt.ptr,
-            cast(int)got.length, got.ptr);
+    atomicLoad(stderr).writeStrings("Expecting ", exp, " as argument for ", errName, " option '", opt, "', got '", got, "' instead.\n");
     return false;
 }
 
@@ -325,9 +319,7 @@ bool overflowedError(const scope char[] opt, const scope char[] got)
 
     version (CoreUnittest) if (inUnittest) return false;
 
-    fprintf(atomicLoad(stderr), "Argument for %.*s option '%.*s' is too big.\n",
-            cast(int)opt.length, opt.ptr,
-            cast(int)got.length, got.ptr);
+    atomicLoad(stderr).writeStrings("Argument for ", opt, " option '", got, "' is too big.\n");
     return false;
 }
 

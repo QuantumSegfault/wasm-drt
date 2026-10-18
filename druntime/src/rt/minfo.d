@@ -12,12 +12,13 @@
 
 module rt.minfo;
 
-import core.stdc.stdio : fprintf, stderr;
+import core.internal.printing;
+import core.stdc.stdio : stderr;
 import core.stdc.stdlib : free, malloc, realloc;
 import core.stdc.string : memcpy, memset;
 import rt.sections;
 
-debug (printModuleDependencies) import core.stdc.stdio : printf;
+debug (printModuleDependencies) import core.stdc.stdio : stdout;
 
 enum
 {
@@ -183,7 +184,7 @@ struct ModuleGroup
         {
         case "deprecate":
             // Option deprecated in 2.101, remove in 2.111
-            fprintf(cast()stderr, "`--DRT-oncycle=deprecate` is no longer supported, using `abort` instead\n");
+            (cast()stderr).writeLine("`--DRT-oncycle=deprecate` is no longer supported, using `abort` instead");
             break;
         case "abort":
             onCycle = abort;
@@ -206,11 +207,14 @@ struct ModuleGroup
         {
             foreach (_m; _modules)
             {
-                printf("%s%s%s:", _m.name.ptr, (_m.flags & MIstandalone)
-                        ? "+".ptr : "".ptr, (_m.flags & (MIctor | MIdtor)) ? "*".ptr : "".ptr);
-                foreach (_i; _m.importedModules)
-                    printf(" %s", _i.name.ptr);
-                printf("\n");
+                (cast()stdout).writeStr(_m.name);
+                if (_m.flags & MIstandalone) (cast()stdout).writeChar('+');
+                if (_m.flags & (MIctor | MIdtor)) (cast()stdout).writeChar('*');
+                foreach (_i; _m.importedModules) {
+                    (cast()stdout).writeChar(' ');
+                    (cast()stdout).writeStr(_i.name);
+                }
+                (cast()stdout).writeChar('\n');
             }
         }
 
@@ -427,7 +431,7 @@ struct ModuleGroup
                                 case print:
                                     // print the message
                                     buildCycleMessage(idx, midx, (string x) {
-                                                      fprintf(cast()stderr, "%.*s", cast(int) x.length, x.ptr);
+                                                      cast()stderr.writeStr(x);
                                                       });
                                     // continue on as if this is correct.
                                     break;
@@ -572,10 +576,10 @@ struct ModuleGroup
             !doSort(MItlsctor | MItlsdtor, _tlsctors))
         {
             // print a warning
-            fprintf(cast()stderr, "Deprecation 16211 warning:\n"
+            (cast()stderr).writeLine("Deprecation 16211 warning:\n"
                 ~ "A cycle has been detected in your program that was undetected prior to DMD\n"
                 ~ "2.072. This program will continue, but will not operate when using DMD 2.074\n"
-                ~ "to compile. Use runtime option --DRT-oncycle=print to see the cycle details.\n");
+                ~ "to compile. Use runtime option --DRT-oncycle=print to see the cycle details.");
 
         }
     }

@@ -9,11 +9,12 @@ extern (C) @nogc nothrow:
 
 bool gc_impl_init()
 {
-    import core.stdc.stdio : fprintf, stderr;
+    import core.stdc.stdio : stderr;
+    import core.internal.printing;
     import core.stdc.stdlib : exit;
     import core.atomic : atomicLoad;
 
-    fprintf(atomicLoad(stderr), "No GC was initialized. Please link a GC implementation in.\n");
+    atomicLoad(stderr).writeLine("No GC was initialized. Please link a GC implementation in.");
     return false;
 }
 

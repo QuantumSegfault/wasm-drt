@@ -58,7 +58,9 @@ version (GNU) import gcc.builtins;
 version (LDC) import ldc.attributes;
 
 debug (PRINTF_TO_FILE) import core.stdc.stdio : sprintf, fprintf, fopen, fflush, FILE;
-else                   import core.stdc.stdio : sprintf, printf; // needed to output profiling results
+
+import core.internal.printing;
+import core.stdc.stdio : stdout; // needed to output profiling results
 
 debug (VALGRIND) import etc.valgrind.valgrind;
 
@@ -1956,44 +1958,122 @@ struct Gcx
     {
         if (config.profile)
         {
-            printf("\tNumber of collections:  %llu\n", cast(ulong)numCollections);
-            printf("\tTotal GC prep time:  %lld milliseconds\n",
-                   prepTime.total!("msecs"));
-            printf("\tTotal mark time:  %lld milliseconds\n",
-                   markTime.total!("msecs"));
-            printf("\tTotal sweep time:  %lld milliseconds\n",
-                   sweepTime.total!("msecs"));
-            long maxPause = maxPauseTime.total!("msecs");
-            printf("\tMax Pause Time:  %lld milliseconds\n", maxPause);
-            long gcTime = (sweepTime + markTime + prepTime).total!("msecs");
-            printf("\tGrand total GC time:  %lld milliseconds\n", gcTime);
-            long pauseTime = (markTime + prepTime).total!("msecs");
-
+            stdout.writeStr("\tNumber of collections:  ");
+            stdout.writeUnsigned(cast(ulong)numCollections);
+            stdout.writeChar('\n');
+        
+            stdout.writeStr("\tTotal GC prep time:  ");
+            stdout.writeSigned(prepTime.total!"msecs");
+            stdout.writeLine(" milliseconds");
+        
+            stdout.writeStr("\tTotal mark time:  ");
+            stdout.writeSigned(markTime.total!"msecs");
+            stdout.writeLine(" milliseconds");
+        
+            stdout.writeStr("\tTotal sweep time:  ");
+            stdout.writeSigned(sweepTime.total!"msecs");
+            stdout.writeLine(" milliseconds");
+        
+            long maxPause = maxPauseTime.total!"msecs";
+            stdout.writeStr("\tMax Pause Time:  ");
+            stdout.writeSigned(maxPause);
+            stdout.writeLine(" milliseconds");
+        
+            long gcTime = (sweepTime + markTime + prepTime).total!"msecs";
+            stdout.writeStr("\tGrand total GC time:  ");
+            stdout.writeSigned(gcTime);
+            stdout.writeLine(" milliseconds");
+        
+            long pauseTime = (markTime + prepTime).total!"msecs";
+        
             char[30] apitxt = void;
-            apitxt[0] = 0;
+            ubyte apitxtLength = 0;
             debug(PROFILE_API) if (config.profile > 1)
             {
                 static Duration toDuration(long dur)
                 {
                     return MonoTime(dur) - MonoTime(0);
                 }
-
-                printf("\n");
-                printf("\tmalloc:  %llu calls, %lld ms\n", cast(ulong)numMallocs, toDuration(mallocTime).total!"msecs");
-                printf("\trealloc: %llu calls, %lld ms\n", cast(ulong)numReallocs, toDuration(reallocTime).total!"msecs");
-                printf("\tfree:    %llu calls, %lld ms\n", cast(ulong)numFrees, toDuration(freeTime).total!"msecs");
-                printf("\textend:  %llu calls, %lld ms\n", cast(ulong)numExtends, toDuration(extendTime).total!"msecs");
-                printf("\tother:   %llu calls, %lld ms\n", cast(ulong)numOthers, toDuration(otherTime).total!"msecs");
-                printf("\tlock time: %lld ms\n", toDuration(lockTime).total!"msecs");
-
+        
+                stdout.writeChar('\n');
+        
+                stdout.writeStr("\tmalloc:  ");
+                stdout.writeUnsigned(cast(ulong)numMallocs);
+                stdout.writeStr(" calls, ");
+                stdout.writeSigned(toDuration(mallocTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
+                stdout.writeStr("\trealloc: ");
+                stdout.writeUnsigned(cast(ulong)numReallocs);
+                stdout.writeStr(" calls, ");
+                stdout.writeSigned(toDuration(reallocTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
+                stdout.writeStr("\tfree:    ");
+                stdout.writeUnsigned(cast(ulong)numFrees);
+                stdout.writeStr(" calls, ");
+                stdout.writeSigned(toDuration(freeTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
+                stdout.writeStr("\textend:  ");
+                stdout.writeUnsigned(cast(ulong)numExtends);
+                stdout.writeStr(" calls, ");
+                stdout.writeSigned(toDuration(extendTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
+                stdout.writeStr("\tother:   ");
+                stdout.writeUnsigned(cast(ulong)numOthers);
+                stdout.writeStr(" calls, ");
+                stdout.writeSigned(toDuration(otherTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
+                stdout.writeStr("\tlock time: ");
+                stdout.writeSigned(toDuration(lockTime).total!"msecs");
+                stdout.writeLine(" ms");
+        
                 long apiTime = mallocTime + reallocTime + freeTime + extendTime + otherTime + lockTime;
-                printf("\tGC API: %lld ms\n", toDuration(apiTime).total!"msecs");
-                sprintf(apitxt.ptr, " API%5lld ms", toDuration(apiTime).total!"msecs");
-            }
+                long apiMs = toDuration(apiTime).total!"msecs";
+                
+                stdout.writeStr("\tGC API: ");
+                stdout.writeSigned(apiMs);
+                stdout.writeLine(" ms");
 
-            printf("GC summary:%5lld MB,%5lld GC%5lld ms, Pauses%5lld ms <%5lld ms%s\n",
-                   cast(long) maxPoolMemory >> 20, cast(ulong)numCollections, gcTime,
-                   pauseTime, maxPause, apitxt.ptr);
+                apitxt[apitxtLength..apitxtLength+4] = " API"[];
+                apitxtLength += 4;
+
+                {
+                    import core.internal.string : SignedStringBuf, signedToTempString;
+                    
+                    SignedStringBuf buf = ' ';
+                    auto str = apiMs.signedToTempString(buf);
+                
+                    auto len = (str.length > 5) ? str.length : 5;
+                    
+                    apitxt[apitxtLength..apitxtLength+len] = buf[buf.length-len .. $];
+                    apitxtLength += len;
+                }
+                
+                apitxt[apitxtLength..apitxtLength+3] = " ms"[];
+                apitxtLength += 3;
+            }
+        
+            stdout.writeStr("GC summary:");
+            stdout.writeSigned(cast(long) maxPoolMemory >> 20, 5);
+            stdout.writeStr(" MB,");
+            stdout.writeUnsigned(cast(ulong)numCollections, 5);
+            stdout.writeStr(" GC");
+            stdout.writeSigned(gcTime, 5);
+            stdout.writeStr(" ms, Pauses ");
+            stdout.writeSigned(pauseTime, 5);
+            stdout.writeStr(" ms < ");
+            stdout.writeSigned(maxPause, 5);
+            stdout.writeStr(" ms");
+        
+            if (apitxtLength)
+            {
+                stdout.writeStr(apitxt[0 .. apitxtLength]);
+            }
+            stdout.writeChar('\n');
         }
 
         version (Posix)

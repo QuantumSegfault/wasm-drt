@@ -99,11 +99,15 @@ extern (C)
             switch (config.cleanup)
             {
                 default:
-                    import core.stdc.stdio : fprintf, stderr;
+                    import core.internal.printing;
+                    import core.stdc.stdio : stderr;
                     import core.atomic : atomicLoad;
 
-                    fprintf(atomicLoad(stderr), "Unknown GC cleanup method, please recheck ('%.*s').\n",
-                            cast(int)config.cleanup.length, config.cleanup.ptr);
+                    atomicLoad(stderr).writeStrings(
+                        "Unknown GC cleanup method, please recheck ('",
+                        config.cleanup,
+                        "').\n"
+                    );
                     break;
                 case "none":
                     break;
