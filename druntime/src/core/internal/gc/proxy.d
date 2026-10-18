@@ -31,7 +31,7 @@ private
     extern (C)
     {
         bool gc_impl_init() nothrow @nogc;
-        void gc_impl_term() nothrow @nogc;
+        void gc_impl_destroy() nothrow @nogc;
         void gc_impl_enable();
         void gc_impl_disable();
         void gc_impl_collect() nothrow;
@@ -114,6 +114,7 @@ extern (C)
                     gc_impl_runFinalizers((cast(ubyte*)null)[0 .. size_t.max]);
                     break;
             }
+            gc_impl_destroy();
         }
     }
 

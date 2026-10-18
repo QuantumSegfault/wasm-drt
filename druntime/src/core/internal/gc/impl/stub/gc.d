@@ -17,6 +17,10 @@ bool gc_impl_init()
     return false;
 }
 
+void gc_impl_destroy()
+{
+}
+
 void gc_impl_enable()
 {
 }

@@ -144,6 +144,15 @@ extern (C) {
         return gcInst !is null;
     }
     
+    void gc_impl_destroy()
+    {
+        if (gcInst !is null) {
+            (*gcInst).destroy!false();
+            cstdlib.free(gcInst);
+            gcInst = null;
+        }
+    }
+    
     void gc_impl_enable()
     {
         gcInst.enable();
